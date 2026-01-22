@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - JobBoard{% endblock %}
+
+{% block content %}
+<div class="row" style="display:flex; justify-content:center; align-items:center; min-height:80vh;">
+    <div class="card fade-in" style="width: 100%; max-width: 400px;">
+        <h2 class="text-center mb-1" style="color: var(--primary-color);">Crear Cuenta</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="text-error">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary" style="width:100%;">Registrarse</button>
+        </form>
+
+        <p class="text-center mt-1">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Ingresa aquí</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

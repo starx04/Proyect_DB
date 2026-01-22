@@ -17,6 +17,21 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from django.contrib import admin
+from django.urls import path, include
+from django.views.generic import TemplateView
+from django.contrib.auth.decorators import login_required
+
+# Vista Home Temporal
+@login_required
+def home_view(request):
+    return render(request, 'home.html')
+
+from django.shortcuts import render
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('accounts.urls')),
+    path('locations/', include('locations.urls')),
+    path('', home_view, name='home'),
 ]

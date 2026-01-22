@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - JobBoard{% endblock %}
+
+{% block content %}
+<div class="row fade-in">
+    <div class="card">
+        <h1 style="color: var(--primary-color);">Bienvenido al Dashboard</h1>
+        <p>Has ingresado correctamente al sistema.</p>
+
+        <div
+            style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="padding: 1.5rem; background: #f9f9f9; border-radius: 8px; text-align: center;">
+                <i class="fas fa-user-circle"
+                    style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 1rem;"></i>
+                <h3>Mi Perfil</h3>
+                <p>Gestiona tus datos personales.</p>
+            </div>
+
+            <div style="padding: 1.5rem; background: #f9f9f9; border-radius: 8px; text-align: center;">
+                <i class="fas fa-search" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                <h3>Buscar Empleo</h3>
+                <p>Explora las ofertas disponibles.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
