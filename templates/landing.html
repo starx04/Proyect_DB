@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bienvenido a JobBoard{% endblock %}
+
+{% block content %}
+<div class="hero-section fade-in-up">
+    <h1 class="hero-title">Encuentra tu futuro <span style="color: var(--primary-color);">Ideal</span></h1>
+    <p class="hero-subtitle">Conectamos a los mejores talentos con las empresas más innovadoras. Únete hoy y da el
+        siguiente paso en tu carrera.</p>
+
+    <div style="margin-top: 2rem;">
+        {% if user.is_authenticated %}
+        <a href="{% url 'home' %}" class="btn btn-primary pulse-hover" style="padding: 1rem 2rem; font-size: 1.2rem;">
+            Ir a mi Dashboard <i class="fas fa-arrow-right"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'registro' %}" class="btn btn-primary pulse-hover" style="margin-right: 1rem;">Comenzar
+            Ahora</a>
+        <a href="{% url 'login' %}" class="btn btn-secondary">Ya tengo cuenta</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div class="feature-grid">
+        <div class="feature-card fade-in-up" style="animation-delay: 0.2s;">
+            <i class="fas fa-rocket feature-icon"></i>
+            <h3>Rápido y Fácil</h3>
+            <p>Crea tu perfil en minutos y postúlate a cientos de ofertas con un solo clic.</p>
+        </div>
+        <div class="feature-card fade-in-up" style="animation-delay: 0.4s;">
+            <i class="fas fa-building feature-icon" style="color: var(--secondary-color);"></i>
+            <h3>Empresas Top</h3>
+            <p>Accede a vacantes de las compañías líderes en el mercado tecnológico.</p>
+        </div>
+        <div class="feature-card fade-in-up" style="animation-delay: 0.6s;">
+            <i class="fas fa-shield-alt feature-icon" style="color: var(--accent-color);"></i>
+            <h3>Seguro y Privado</h3>
+            <p>Tus datos están protegidos. Tú decides quién ve tu información.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

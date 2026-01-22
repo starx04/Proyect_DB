@@ -23,13 +23,24 @@ def registro_view(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
     if request.method == 'POST':
         form = CustomAuthenticationForm(data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.success(request, f'Hola de nuevo, {user.username}')
+            messages.success(request, f'¡Bienvenido de nuevo, {user.first_name or user.username}!')
+            
+            # Redirección Inteligente (si venía de otra pag)
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+                
             return redirect('home')
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos. Por favor verifícalos.')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})

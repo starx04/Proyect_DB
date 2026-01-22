@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <h2 class="mb-1" style="color: var(--accent-color);"><i class="fas fa-cogs"></i> Panel de Administración</h2>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <i class="fas fa-map-marked-alt feature-icon"></i>
+            <h3>Ubicaciones</h3>
+            <p>Gestiona Países, Provincias y Ciudades.</p>
+            <a href="{% url 'admin_locations' %}" class="btn btn-secondary mt-1">Ir a Configuración</a>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-users feature-icon"></i>
+            <h3>Usuarios</h3>
+            <p>Administra cuentas y permisos.</p>
+            <button class="btn btn-secondary mt-1">Gestionar Usuarios</button>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-database feature-icon"></i>
+            <h3>Sistema</h3>
+            <p>Logs y configuración global.</p>
+            <a href="/admin/" class="btn btn-primary mt-1">Admin Django</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

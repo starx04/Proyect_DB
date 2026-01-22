@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Empresa{% endblock %}
+
+{% block content %}
+<div class="fade-in-up">
+    <h2 class="mb-1">Panel de <span style="color: var(--secondary-color);">{{
+            user.perfil_empresa.nombre_empresa|default:user.username }}</span> 🏢</h2>
+    <div class="row">
+        <div class="card" style="width: 100%; border-left: 5px solid var(--secondary-color);">
+            <h3><i class="fas fa-plus-circle"></i> Nueva Oferta</h3>
+            <p>Publica una nueva vacante para encontrar talento.</p>
+            <button class="btn btn-primary mt-1">Publicar Oferta</button>
+        </div>
+    </div>
+
+    <h3 class="mt-1">Resumen</h3>
+    <div class="feature-grid">
+        <div class="card">
+            <h4>Ofertas Activas</h4>
+            <div style="font-size: 2rem; font-weight: bold;">0</div>
+        </div>
+        <div class="card">
+            <h4>Postulantes Nuevos</h4>
+            <div style="font-size: 2rem; font-weight: bold; color: var(--accent-color);">0</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

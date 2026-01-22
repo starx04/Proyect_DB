@@ -22,10 +22,22 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-# Vista Home Temporal
-@login_required
-def home_view(request):
-    return render(request, 'home.html')
+# Vista Home Inteligente (Redirecciona según Rol)
+@login_required(login_url='landing')
+def dashboard_view(request):
+    user = request.user
+    if user.tipo_usuario == 'admin' or user.is_staff:
+        return render(request, 'dashboard/admin.html')
+    elif user.tipo_usuario == 'empresa':
+        return render(request, 'dashboard/empresa.html')
+    elif user.tipo_usuario == 'candidato':
+        return render(request, 'dashboard/candidato.html')
+    return render(request, 'home.html') # Fallback
+
+def landing_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    return render(request, 'landing.html')
 
 from django.shortcuts import render
 
@@ -33,5 +45,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('locations/', include('locations.urls')),
-    path('', home_view, name='home'),
+    path('dashboard/', dashboard_view, name='home'),
+    path('', landing_view, name='landing'),
 ]
