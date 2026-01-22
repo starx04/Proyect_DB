@@ -41,8 +41,8 @@ class Usuario(AbstractUser):
     tipo_usuario = models.CharField(max_length=20, choices=TipoUsuario.choices)
     estado = models.BooleanField(default=True, help_text="true=activo, false=baneado")
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'tipo_usuario']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'tipo_usuario']
 
     def __str__(self):
         return self.email
