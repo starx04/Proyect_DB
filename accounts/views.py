@@ -58,18 +58,39 @@ def perfil_candidato_step(request):
 def dashboard_candidato(request):
     candidato = request.user.perfil_candidato
     # Obtenemos sus datos relacionados
-    experiencias = candidato.experiencia_laboral.all()
-    educacion = candidato.educacion.all()
+    experiencias = candidato.experiencia_laboral.all().order_by('-fecha_inicio')
+    educacion = candidato.educacion.all().order_by('-fecha_inicio')
+    
+    # Datos nuevos
+    postulaciones = candidato.postulaciones.select_related('oferta', 'oferta__empresa').order_by('-fecha_postulacion')[:5]
+    ofertas_guardadas = candidato.ofertas_guardadas.select_related('oferta', 'oferta__empresa').order_by('-created_at')[:5]
+    habilidades = candidato.habilidades.select_related('habilidad').all()
+    idiomas = candidato.idiomas.select_related('idioma').all()
+    
+    # Stats
+    stats = {
+        'postulaciones_activas': candidato.postulaciones.exclude(estado='rechazado').count(),
+        'entrevistas': candidato.postulaciones.filter(estado='entrevista').count(),
+        'guardadas': candidato.ofertas_guardadas.count()
+    }
     
     return render(request, 'candidatoPerfil/dashboard.html', {
         'candidato': candidato,
         'experiencias': experiencias,
-        'educacion': educacion
+        'educacion': educacion,
+        'postulaciones': postulaciones,
+        'ofertas_guardadas': ofertas_guardadas,
+        'habilidades': habilidades,
+        'idiomas': idiomas,
+        'stats': stats
     })
 
 @login_required
 def wizard_perfil(request, paso=1):
-    # 1. Obtener el candidato usando el campo 'usuario' (según tu modelo)
+    from .models import Habilidad, CandidatoHabilidad, Documento
+    from .forms import HabilidadForm # Import needed forms
+
+    # 1. Obtener el candidato
     try:
         candidato = Candidato.objects.get(usuario=request.user)
     except Candidato.DoesNotExist:
@@ -87,12 +108,18 @@ def wizard_perfil(request, paso=1):
     elif paso == 2:
         form = ExperienciaForm() 
         template = 'candidatoPerfil/paso2_experiencia.html'
-    
+        
     elif paso == 3:
+        # Habilidades (Nuevo paso)
+        form = HabilidadForm()
+        template = 'candidatoPerfil/paso3_habilidades.html'
+
+    elif paso == 4:
+        # Archivos (Antes Paso 3)
         # Buscamos el último CV para editarlo si existe
         documento = candidato.documento.filter(tipo_documento="CV").last()
         form = DocumentoForm(instance=documento)
-        template = 'candidatoPerfil/paso3_subir_cv.html'
+        template = 'candidatoPerfil/paso4_archivos.html' # Changed name
     else:
         return redirect('dashboard_candidato')
 
@@ -103,26 +130,61 @@ def wizard_perfil(request, paso=1):
         elif paso == 2:
             form = ExperienciaForm(request.POST)
         elif paso == 3:
+            form = HabilidadForm(request.POST)
+        elif paso == 4:
             documento = candidato.documento.filter(tipo_documento="CV").last()
             form = DocumentoForm(request.POST, request.FILES, instance=documento)
 
+        # VALIDACIONES ESPECIFICAS POR PASO
+        
+        # 1. Validar si saltan el paso (Solo para pasos opcionales: 2 y 3 y 4)
+        if paso == 2 and request.POST.get('tiene_experiencia') == 'no':
+             return redirect('wizard_perfil', paso=3)
+        
+        if paso == 3 and request.POST.get('tiene_habilidades') == 'no':
+             return redirect('wizard_perfil', paso=4)
+
+        if paso == 4 and request.POST.get('tiene_cv') == 'no':
+             # Si dice que no tiene CV, pero ya existía uno, ¿lo borramos? O solo terminamos
+             # Por ahora, terminamos
+             messages.info(request, "Registro finalizado.")
+             return redirect('dashboard_candidato')
+
+
+        # 2. Guardar Formulario
         if form.is_valid():
-            # Lógica especial para el Paso 3 (CV Opcional)
+            
+            # GUARDADO PASO 3 (HABILIDADES)
             if paso == 3:
-                # Si el usuario NO subió archivo y NO hay un documento previo, solo redirigimos
-                if not request.FILES.get('url_archivo') and not documento:
-                    messages.info(request, "Registro finalizado. Recuerda subir tu CV después.")
-                    return redirect('dashboard_candidato')
+                nombre = form.cleaned_data['nombre_habilidad']
+                # Buscar o crear la habilidad en el catálogo
+                habilidad_obj, created = Habilidad.objects.get_or_create(nombre__iexact=nombre, defaults={'nombre': nombre})
                 
-                # Si hay archivo o estamos editando uno existente, guardamos
+                # Crear la relación (evitar duplicados)
+                if not CandidatoHabilidad.objects.filter(candidato=candidato, habilidad=habilidad_obj).exists():
+                    candi_hab = form.save(commit=False)
+                    candi_hab.candidato = candidato
+                    candi_hab.habilidad = habilidad_obj
+                    candi_hab.save()
+                
+                # En este paso, tal vez queremos permitir agregar MAS habilidades.
+                # Por simplicidad ahora, guardamos una y pasamos al siguiente o recargamos?
+                # El usuario pedía "Agregar", así que idealmente debería quedarse en el mismo paso o tener un botón "Agregar otra".
+                # Vamos a asumir "Guardar y Continuar" para el flujo básico del wizard.
+                # Si quiere agregar más, puede volver.
+                
+                return redirect('wizard_perfil', paso=4)
+
+            # GUARDADO PASO 4 (ARCHIVOS)
+            if paso == 4:
                 obj = form.save(commit=False)
                 obj.candidato = candidato
                 obj.tipo_documento = "CV"
                 obj.save()
-                messages.success(request, "¡Perfil y CV actualizados con éxito!")
+                messages.success(request, "¡Perfil Completado!")
                 return redirect('dashboard_candidato')
 
-            # Lógica para Pasos 1 y 2
+            # GUARDADO PASOS 1 y 2
             obj = form.save(commit=False)
             if paso == 1:
                 obj.usuario = request.user
@@ -135,13 +197,18 @@ def wizard_perfil(request, paso=1):
             if paso == 1: return redirect('wizard_perfil', paso=2)
             if paso == 2: return redirect('wizard_perfil', paso=3)
 
-    # Contexto para el template
-    return render(request, template, {
+    # Contexto
+    context = {
         'form': form, 
         'paso': paso,
         'candidato': candidato,
-        'experiencias': candidato.experiencia_laboral.all() 
-    })
+    }
+    
+    # Datos extra para visualización
+    if paso == 2: context['experiencias'] = candidato.experiencia_laboral.all()
+    if paso == 3: context['habilidades'] = candidato.habilidades.all() # Mostrar las que va agregando
+    
+    return render(request, template, context)
 
 
 

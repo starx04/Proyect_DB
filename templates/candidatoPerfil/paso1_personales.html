@@ -11,9 +11,9 @@
         --bg-gray: #f8fafc;
     }
 
-    body { 
-        background-color: var(--bg-gray); 
-        font-family: 'Inter', sans-serif; 
+    body {
+        background-color: var(--bg-gray);
+        font-family: 'Inter', sans-serif;
     }
 
     .wizard-card {
@@ -37,8 +37,8 @@
         font-size: 0.95rem;
     }
 
-    .modern-form input, 
-    .modern-form textarea, 
+    .modern-form input,
+    .modern-form textarea,
     .modern-form select {
         padding: 0.8rem 1.2rem;
         border: 1px solid #e2e8f0;
@@ -48,7 +48,7 @@
         background-color: #fff;
     }
 
-    .modern-form input:focus, 
+    .modern-form input:focus,
     .modern-form textarea:focus {
         border-color: var(--primary-color);
         outline: none;
@@ -78,12 +78,38 @@
         transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
     }
+
+    .shake-animation {
+        animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+        0% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-5px);
+        }
+
+        50% {
+            transform: translateX(5px);
+        }
+
+        75% {
+            transform: translateX(-5px);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
+    }
 </style>
 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-7 col-md-9">
-            
+
             <div class="d-flex justify-content-center gap-3 mb-5">
                 <span class="step-indicator bg-primary text-white">1. DATOS</span>
                 <span class="step-indicator bg-white text-muted border">2. EXPERIENCIA</span>
@@ -92,21 +118,31 @@
 
             <div class="card wizard-card overflow-hidden">
                 <div style="height: 8px; background: linear-gradient(90deg, #2563eb, #7c3aed);"></div>
-                
+
                 <div class="card-body p-4 p-md-5">
                     <header class="mb-5">
                         <h2 class="fw-bold text-dark mb-2">Información Básica</h2>
-                        <p class="text-secondary">Completa tus datos personales para que podamos validar tu perfil profesional.</p>
+                        <p class="text-secondary">Completa tus datos personales para que podamos validar tu perfil
+                            profesional.</p>
                     </header>
 
                     <form method="post" class="modern-form">
                         {% csrf_token %}
-                        
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
                         <div class="form-body">
                             {{ form.as_p }}
                         </div>
 
-                        <div class="footer-actions d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                        <div
+                            class="footer-actions d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
                             <span class="text-muted small">
                                 <i class="fas fa-lock me-1"></i> Datos protegidos
                             </span>
@@ -117,11 +153,76 @@
                     </form>
                 </div>
             </div>
-            
+
             <p class="text-center mt-4 text-muted small">
-                ¿Tienes problemas con el formulario? <a href="#" class="fw-bold text-primary text-decoration-none">Contactar soporte</a>
+                ¿Tienes problemas con el formulario? <a href="#"
+                    class="fw-bold text-primary text-decoration-none">Contactar soporte</a>
             </p>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const titleInput = document.getElementById('id_titulo_profesional');
+        const phoneInput = document.getElementById('id_telefono');
+
+        // Helper to show/hide errors
+        function showError(input, message) {
+            // Remove existing error if any
+            let existingError = input.parentNode.querySelector('.js-error');
+            if (existingError) existingError.remove();
+
+            if (message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'js-error fw-bold shake-animation';
+                errorDiv.style.color = '#dc2626'; // Strong red
+                errorDiv.style.marginTop = '6px';
+                errorDiv.style.fontSize = '0.9rem';
+                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i> ${message}`;
+
+                input.parentNode.appendChild(errorDiv);
+
+                input.classList.add('is-invalid');
+                input.style.borderColor = '#dc2626';
+                input.style.backgroundColor = '#fef2f2'; // Light red background
+            } else {
+                input.classList.remove('is-invalid');
+                input.style.borderColor = '';
+                input.style.backgroundColor = '';
+            }
+        }
+
+        if (titleInput) {
+            titleInput.addEventListener('input', function (e) {
+                const value = e.target.value;
+                // Regex: Solo letras y espacios
+                if (!/^[a-zA-Z\s]*$/.test(value)) {
+                    showError(this, 'Solo se permiten letras y espacios.');
+                } else {
+                    showError(this, '');
+                }
+            });
+        }
+
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function (e) {
+                // Forzar límite de 10 caracteres físicamente si el navegador no respeta maxlength
+                if (this.value.length > 10) {
+                    this.value = this.value.slice(0, 10);
+                }
+
+                const value = e.target.value;
+                // Regex: Solo números
+                if (!/^\d*$/.test(value)) {
+                    showError(this, 'Solo se permiten números.');
+                } else if (value.length > 0 && value.length !== 10) {
+                    showError(this, 'El teléfono debe tener exactamente 10 dígitos.');
+                } else {
+                    showError(this, '');
+                }
+            });
+        }
+    });
+</script>
 {% endblock %}

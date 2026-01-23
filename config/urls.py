@@ -23,7 +23,7 @@ from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
 # Vista Home Temporal
-@login_required
+# Vista Home Temporal
 def home_view(request):
     return render(request, 'home.html')
 

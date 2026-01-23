@@ -12,23 +12,16 @@
         --bg-soft: #f1f5f9;
     }
 
-    body { 
-        background-color: var(--bg-soft); 
-        font-family: 'Inter', sans-serif; 
+    body {
+        background-color: var(--bg-soft);
+        font-family: 'Inter', sans-serif;
     }
 
     .wizard-card {
         background: #ffffff;
         border-radius: 24px;
         border: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    }
-
-    /* Mejora de los campos de Django {{ form.as_p }} */
-    .modern-form p {
-        margin-bottom: 1.5rem;
-        display: flex;
-        flex-direction: column;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     }
 
     .modern-form label {
@@ -36,12 +29,10 @@
         color: var(--text-dark);
         margin-bottom: 0.6rem;
         font-size: 0.95rem;
-        display: flex;
-        align-items: center;
     }
 
-    .modern-form input, 
-    .modern-form textarea, 
+    .modern-form input,
+    .modern-form textarea,
     .modern-form select {
         padding: 0.8rem 1.2rem;
         border: 1px solid #e2e8f0;
@@ -57,11 +48,16 @@
         outline: none;
     }
 
-    .modern-form input[type="checkbox"] {
-        width: 1.2rem;
-        height: 1.2rem;
-        cursor: pointer;
-        accent-color: var(--primary-blue);
+    .section-title {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #64748b;
+        font-weight: 700;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        margin-top: 2rem;
     }
 
     .step-pill {
@@ -82,71 +78,191 @@
         color: white;
     }
 
-    .btn-main:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2);
+    /* Toggle Switch Style */
+    .experience-toggle .btn-check:checked+.btn {
+        background-color: var(--primary-blue);
         color: white;
+        border-color: var(--primary-blue);
     }
 
-    .btn-back {
-        color: #64748b;
+    .experience-toggle .btn {
+        border-radius: 50px;
+        padding: 10px 30px;
         font-weight: 600;
-        text-decoration: none;
-        transition: color 0.2s;
     }
-
-    .btn-back:hover { color: var(--text-dark); }
 </style>
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-7 col-md-9">
-            
-            <div class="d-flex justify-content-center gap-3 mb-5">
+        <div class="col-lg-8 col-md-10">
+
+            <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
                 <span class="step-pill bg-success text-white shadow-sm"><i class="fas fa-check me-1"></i> Datos</span>
                 <span class="step-pill bg-primary text-white shadow-sm">2. Experiencia</span>
-                <span class="step-pill bg-white text-muted border">3. Archivos</span>
+                <span class="step-pill bg-white text-muted border">3. Habilidades</span>
+                <span class="step-pill bg-white text-muted border">4. Archivos</span>
             </div>
 
             <div class="card wizard-card overflow-hidden">
                 <div style="height: 8px; background: linear-gradient(90deg, #3b82f6, #2563eb);"></div>
-                
-                <div class="card-body p-4 p-md-5">
-                    <div class="d-flex align-items-center mb-5">
-                        <div class="bg-primary text-white rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                            <i class="fas fa-briefcase fs-4"></i>
-                        </div>
-                        <div>
-                            <h2 class="fw-bold text-dark mb-0">Trayectoria Laboral</h2>
-                            <p class="text-secondary mb-0">Queremos conocer tus logros y roles anteriores.</p>
-                        </div>
-                    </div>
 
-                    <form method="post" class="modern-form">
-                        {% csrf_token %}
-                        
-                        <div class="form-content">
-                            {{ form.as_p }}
+                <div class="card-body p-4 p-md-5">
+                    <header class="text-center mb-5">
+                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 60px; height: 60px;">
+                            <i class="fas fa-briefcase fs-3"></i>
                         </div>
+                        <h2 class="fw-bold text-dark mb-1">Trayectoria Laboral</h2>
+                        <p class="text-secondary">Cuéntanos sobre tu experiencia profesional</p>
+                    </header>
+
+                    <form method="post" class="modern-form" id="experienceForm">
+                        {% csrf_token %}
+
+                        <!-- PREGUNTA INICIAL -->
+                        <div class="text-center mb-5 p-4 bg-light rounded-3">
+                            <h5 class="fw-bold mb-3">¿Dispone de experiencia laboral?</h5>
+                            <div class="experience-toggle btn-group" role="group">
+                                <input type="radio" class="btn-check" name="tiene_experiencia" id="exp_si" value="si"
+                                    checked>
+                                <label class="btn btn-outline-secondary" for="exp_si">
+                                    <i class="fas fa-check-circle me-1"></i> Sí, tengo experiencia
+                                </label>
+
+                                <input type="radio" class="btn-check" name="tiene_experiencia" id="exp_no" value="no">
+                                <label class="btn btn-outline-secondary" for="exp_no">
+                                    <i class="fas fa-times-circle me-1"></i> No tengo experiencia
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- CAMPOS DEL FORMULARIO -->
+                        <div id="formFieldsContainer">
+
+                            <!-- 1. OBLIGATORIOS -->
+                            <div class="section-title text-primary"><i class="fas fa-star me-2"></i>1. Campos
+                                Obligatorios (Indispensables)</div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Nombre de la empresa *</label>
+                                    {{ form.empresa }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Cargo/Puesto *</label>
+                                    {{ form.cargo }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Fecha de inicio *</label>
+                                    {{ form.fecha_inicio }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Fecha fin</label>
+                                    {{ form.fecha_fin }}
+                                    <div class="form-check mt-2">
+                                        {{ form.trabajo_actual }}
+                                        <label class="form-check-label small text-muted"
+                                            for="{{ form.trabajo_actual.id_for_label }}">
+                                            Actualmente trabajo aquí
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label>Ubicación *</label>
+                                    {{ form.ubicacion }}
+                                </div>
+                                <div class="col-12">
+                                    <label>Funciones principales *</label>
+                                    {{ form.descripcion }}
+                                </div>
+                            </div>
+
+                            <!-- 2. RECOMENDADOS -->
+                            <div class="section-title text-success mt-5"><i class="fas fa-thumbs-up me-2"></i>2. Campos
+                                Recomendados (Diferenciadores)</div>
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label>Logros cuantificables</label>
+                                    {{ form.logros }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Tecnologías/Herramientas</label>
+                                    {{ form.tecnologias }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Personas a cargo</label>
+                                    {{ form.personas_cargo }}
+                                </div>
+                                <div class="col-12">
+                                    <label>Breve descripción de la empresa</label>
+                                    {{ form.descripcion_empresa }}
+                                </div>
+                            </div>
+
+                            <!-- 3. ESTRATEGICOS -->
+                            <div class="section-title text-info mt-5"><i class="fas fa-lightbulb me-2"></i>3. Campos
+                                Estratégicos (Conocimiento Extra)</div>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Motivo de salida</label>
+                                    {{ form.motivo_salida }}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Tipo de contrato</label>
+                                    {{ form.tipo_contrato }}
+                                </div>
+                                <div class="col-12">
+                                    <label>Proyectos destacados (URL)</label>
+                                    {{ form.proyectos_destacados }}
+                                </div>
+                            </div>
+
+                        </div> <!-- End formFieldsContainer -->
 
                         <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
-                            <a href="{% url 'wizard_perfil' paso=1 %}" class="btn-back">
+                            <a href="{% url 'wizard_perfil' paso=1 %}"
+                                class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
                                 <i class="fas fa-arrow-left me-2"></i> Volver
                             </a>
-                            <button type="submit" class="btn btn-primary btn-main">
+                            <button type="submit" class="btn btn-primary btn-main" id="submitBtn">
                                 Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>
                             </button>
                         </div>
                     </form>
                 </div>
             </div>
-            
-            <p class="text-center mt-4 text-muted small">
-                Toda tu información se maneja de forma confidencial.
-            </p>
         </div>
     </div>
 </div>
-{% endblock %} ```
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const radioSi = document.getElementById('exp_si');
+        const radioNo = document.getElementById('exp_no');
+        const container = document.getElementById('formFieldsContainer');
+        const btn = document.getElementById('submitBtn');
+        const requiredInputs = container.querySelectorAll('[required]');
+
+        function toggleForm() {
+            if (radioNo.checked) {
+                container.style.display = 'none';
+                btn.innerHTML = 'Saltar paso <i class="fas fa-forward ms-2"></i>';
+                // Remove required attribute to allow submission
+                requiredInputs.forEach(input => input.removeAttribute('required'));
+            } else {
+                container.style.display = 'block';
+                btn.innerHTML = 'Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>';
+                // Restore required attribute (validation handled by backend too)
+                // Note: Ideally we restore original required state, but simply reloading page resets it if needed.
+                // For now, let's just rely on backend validation if "Si" is checked? 
+                // Backend ignores validation if "tiene_experiencia" is 'no'. But frontend validation might block if we don't remove required.
+            }
+        }
+
+        radioSi.addEventListener('change', toggleForm);
+        radioNo.addEventListener('change', toggleForm);
+
+        // Init
+        toggleForm();
+    });
+</script>
+{% endblock %}

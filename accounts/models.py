@@ -42,8 +42,8 @@ class Usuario(AbstractUser):
     tipo_usuario = models.CharField(max_length=20, choices=TipoUsuario.choices)
     estado = models.BooleanField(default=True, help_text="true=activo, false=baneado")
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'tipo_usuario']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'tipo_usuario']
 
     def __str__(self):
         return self.email
@@ -117,6 +117,8 @@ class CandidatoHabilidad(models.Model):
     candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='habilidades')
     habilidad = models.ForeignKey(Habilidad, on_delete=models.CASCADE)
     nivel = models.CharField(max_length=20, choices=NivelHabilidad.choices)
+    anios_experiencia = models.PositiveIntegerField(default=0, help_text="Años de experiencia aplicando esta habilidad")
+    contexto_uso = models.TextField(blank=True, null=True, help_text="En qué proyecto o empresa la utilizaste")
 
     class Meta:
         unique_together = ('candidato', 'habilidad')
@@ -131,15 +133,32 @@ class CandidatoIdioma(models.Model):
 
 class ExperienciaLaboral(models.Model):
     candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='experiencia_laboral')
+    
+    # 1. Campos Duros (Obligatorios)
     empresa = models.CharField(max_length=200)
     cargo = models.CharField(max_length=200)
     fecha_inicio = models.DateField()
-    fecha_fin = models.DateField(blank=True, null=True)
+    fecha_fin = models.DateField(blank=True, null=True, help_text="Dejar vacío si es actual")
     trabajo_actual = models.BooleanField(default=False)
-    descripcion = models.TextField(blank=True, null=True)
+    ubicacion = models.CharField(max_length=200, blank=True, null=True, help_text="Ciudad y País")
+    descripcion = models.TextField(blank=True, null=True, help_text="Funciones principales")
+    
+    # 2. Recomendados
+    logros = models.TextField(blank=True, null=True, help_text="Resultados cuantificables")
+    tecnologias = models.CharField(max_length=500, blank=True, null=True, help_text="Herramientas usadas")
+    personas_cargo = models.IntegerField(blank=True, null=True, help_text="Número de personas a cargo")
+    descripcion_empresa = models.TextField(blank=True, null=True, help_text="Breve descripción del sector y tamaño")
+    
+    # 3. Estratégicos
+    motivo_salida = models.TextField(blank=True, null=True, help_text="Solo control interno")
+    tipo_contrato = models.CharField(max_length=100, blank=True, null=True, help_text="Freelance, Nominal, etc")
+    proyectos_destacados = models.URLField(blank=True, null=True, help_text="Enlace a portafolio o proyecto")
 
     class Meta:
         verbose_name_plural = "Experiencias Laborales"
+
+    def __str__(self):
+        return f"{self.cargo} en {self.empresa}"
 
 class Educacion(models.Model):
     candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='educacion')
