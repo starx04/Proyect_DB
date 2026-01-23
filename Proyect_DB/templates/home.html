@@ -4,31 +4,45 @@
 
 {% block content %}
 <div class="row fade-in">
-    <div class="card">
+    <div class="card shadow-sm border-0 p-4">
         <h1 style="color: var(--primary-color);">Bienvenido al Dashboard</h1>
-        <p>Has ingresado correctamente al sistema.</p>
+        <p class="text-muted">Has ingresado correctamente al sistema.</p>
 
-        <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+        <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
             
-            <a href="{% url 'wizard_perfil' paso=1 %}" style="text-decoration: none; color: inherit;">
-                <div style="padding: 1.5rem; background: #f9f9f9; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;" 
-                     onmouseover="this.style.background='#f0f0f0'; this.style.transform='scale(1.02)'" 
-                     onmouseout="this.style.background='#f9f9f9'; this.style.transform='scale(1)'">
-                    <i class="fas fa-user-circle" style="font-size: 2rem; color: var(--secondary-color); margin-bottom: 1rem;"></i>
-                    <h3>Mi Perfil</h3>
-                    <p>Gestiona tus datos personales.</p>
+            <div style="padding: 2rem; background: #f9f9f9; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #eee;" 
+                 onmouseover="this.style.background='#ffffff'; this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.05)'" 
+                 onmouseout="this.style.background='#f9f9f9'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                
+                <i class="fas fa-user-circle" style="font-size: 3rem; color: #a8dadc; margin-bottom: 1rem;"></i>
+                
+                <div class="mb-3">
+                    {% if user.perfil_candidato.titulo_profesional %}
+                        <a href="{% url 'dashboard_candidato' %}" class="btn btn-outline-primary w-100 py-2">
+                            <i class="fas fa-user-check"></i> Mi Perfil
+                        </a>
+                    {% else %}
+                        <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-primary w-100 py-2 shadow-sm">
+                            <i class="fas fa-user-edit"></i> Completar Perfil
+                        </a>
+                    {% endif %}
                 </div>
-            </a>
+                <p class="small text-muted mb-0">Gestiona tus datos personales y profesionales.</p>
+            </div>
 
-            <a href="#" style="text-decoration: none; color: inherit;">
-                <div style="padding: 1.5rem; background: #f9f9f9; border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;"
-                     onmouseover="this.style.background='#f0f0f0'; this.style.transform='scale(1.02)'" 
-                     onmouseout="this.style.background='#f9f9f9'; this.style.transform='scale(1)'">
-                    <i class="fas fa-search" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
-                    <h3>Buscar Empleo</h3>
-                    <p>Explora las ofertas disponibles.</p>
+            <div style="padding: 2rem; background: #f9f9f9; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #eee;"
+                 onmouseover="this.style.background='#ffffff'; this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.05)'" 
+                 onmouseout="this.style.background='#f9f9f9'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                
+                <i class="fas fa-search" style="font-size: 3rem; color: #457b9d; margin-bottom: 1rem;"></i>
+                
+                <div class="mb-3">
+                    <a href="#" class="btn btn-info w-100 py-2 text-white">
+                        <i class="fas fa-briefcase"></i> Buscar Empleo
+                    </a>
                 </div>
-            </a>
+                <p class="small text-muted mb-0">Explora las ofertas disponibles para tu perfil.</p>
+            </div>
             
         </div>
     </div>

@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
@@ -155,8 +156,22 @@ class Educacion(models.Model):
 
 
 class Documento(models.Model):
-    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='documentos')
+    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='documento')
     nombre_archivo = models.CharField(max_length=255)
     url_archivo = models.FileField(upload_to='cvs/')
     tipo_documento = models.CharField(max_length=50, help_text="CV, Carta, Certificado")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"CV de {self.candidato.nombre_completo}"
+    
+class DocumentoForm(forms.ModelForm):
+    class Meta:
+        model = Documento
+        fields = ['nombre_archivo', 'url_archivo']
+    
+    # Hacemos que los campos no sean obligatorios
+    def __init__(self, *args, **kwargs):
+        super(DocumentoForm, self).__init__(*args, **kwargs)
+        self.fields['nombre_archivo'].required = False
+        self.fields['url_archivo'].required = False

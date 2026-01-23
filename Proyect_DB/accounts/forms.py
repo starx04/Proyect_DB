@@ -35,7 +35,9 @@ class DocumentoForm(forms.ModelForm):
     class Meta:
         model = Documento
         fields = ['nombre_archivo', 'url_archivo']
-        widgets = {
-            'nombre_archivo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Mi CV Actual', 'required': 'required'}),
-            'url_archivo': forms.FileInput(attrs={'class': 'form-control', 'accept': '.pdf', 'required': 'required'}),
-        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Esto permite que el formulario acepte estar vacío
+        self.fields['nombre_archivo'].required = False
+        self.fields['url_archivo'].required = False

@@ -69,53 +69,81 @@ def dashboard_candidato(request):
 
 @login_required
 def wizard_perfil(request, paso=1):
-    candidato = request.user.perfil_candidato
-    if paso > 1 and not candidato.titulo_profesional:
-        messages.warning(request, "Primero debes completar tus datos personales.")
-        return redirect('wizard_perfil', paso=1)
-    
+    # 1. Obtener el candidato usando el campo 'usuario' (según tu modelo)
+    try:
+        candidato = Candidato.objects.get(usuario=request.user)
+    except Candidato.DoesNotExist:
+        candidato = Candidato.objects.create(
+            usuario=request.user, 
+            nombre_completo=request.user.username, 
+            fecha_nacimiento='2000-01-01'
+        )
+
+    # --- LÓGICA DE FORMULARIOS (GET) ---
     if paso == 1:
         form = CandidatoPerfilForm(instance=candidato)
         template = 'candidatoPerfil/paso1_personales.html'
+    
     elif paso == 2:
-        form = ExperienciaForm()
+        form = ExperienciaForm() 
         template = 'candidatoPerfil/paso2_experiencia.html'
-    elif paso == 3: # NUEVO PASO PARA EL CV
-        form = DocumentoForm()
+    
+    elif paso == 3:
+        # Buscamos el último CV para editarlo si existe
+        documento = candidato.documento.filter(tipo_documento="CV").last()
+        form = DocumentoForm(instance=documento)
         template = 'candidatoPerfil/paso3_subir_cv.html'
     else:
         return redirect('dashboard_candidato')
 
+    # --- PROCESAMIENTO DE DATOS (POST) ---
     if request.method == 'POST':
         if paso == 1:
             form = CandidatoPerfilForm(request.POST, instance=candidato)
         elif paso == 2:
             form = ExperienciaForm(request.POST)
         elif paso == 3:
-            # ¡IMPORTANTE! request.FILES es necesario para el PDF
-            form = DocumentoForm(request.POST, request.FILES)
-            
+            documento = candidato.documento.filter(tipo_documento="CV").last()
+            form = DocumentoForm(request.POST, request.FILES, instance=documento)
+
         if form.is_valid():
-            obj = form.save(commit=False)
-            if paso == 2 or paso == 3:
-                obj.candidato = candidato
+            # Lógica especial para el Paso 3 (CV Opcional)
             if paso == 3:
+                # Si el usuario NO subió archivo y NO hay un documento previo, solo redirigimos
+                if not request.FILES.get('url_archivo') and not documento:
+                    messages.info(request, "Registro finalizado. Recuerda subir tu CV después.")
+                    return redirect('dashboard_candidato')
+                
+                # Si hay archivo o estamos editando uno existente, guardamos
+                obj = form.save(commit=False)
+                obj.candidato = candidato
                 obj.tipo_documento = "CV"
+                obj.save()
+                messages.success(request, "¡Perfil y CV actualizados con éxito!")
+                return redirect('dashboard_candidato')
+
+            # Lógica para Pasos 1 y 2
+            obj = form.save(commit=False)
+            if paso == 1:
+                obj.usuario = request.user
+            elif paso == 2:
+                obj.candidato = candidato
+            
             obj.save()
             
-            # Si es el último paso, al dashboard; si no, al siguiente paso
-            if paso == 3:
-                messages.success(request, "¡Perfil completo y CV subido!")
-                return redirect('dashboard_candidato')
-            return redirect('wizard_perfil', paso=paso+1)
-    if paso == 3:
-        obj.tipo_documento = "CV"
-        obj.save()
-        messages.success(request, "¡Perfil completo y CV subido!")
-        # Este nombre debe existir en urls.py
-        return redirect('dashboard_candidato')
+            # Redirecciones
+            if paso == 1: return redirect('wizard_perfil', paso=2)
+            if paso == 2: return redirect('wizard_perfil', paso=3)
 
-    return render(request, template, {'form': form, 'paso': paso})
+    # Contexto para el template
+    return render(request, template, {
+        'form': form, 
+        'paso': paso,
+        'candidato': candidato,
+        'experiencias': candidato.experiencia_laboral.all() 
+    })
+
+
 
 @login_required
 def subir_cv_view(request):
