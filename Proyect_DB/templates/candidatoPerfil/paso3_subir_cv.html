@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0 text-primary"><i class="fas fa-file-pdf"></i> Paso 3: Subir Hoja de Vida</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Para finalizar, sube tu CV en formato PDF.</p>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label>Nombre del archivo</label>
+                    {{ form.nombre_archivo }}
+                </div>
+                <div class="mb-4">
+                    <label>Selecciona el PDF</label>
+                    {{ form.url_archivo }}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'wizard_perfil' paso=2 %}" class="btn btn-outline-secondary">Anterior</a>
+                    <button type="submit" class="btn btn-success shadow">Finalizar Registro</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

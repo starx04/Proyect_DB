@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white">
+            <h5 class="mb-0 text-primary"><i class="fas fa-briefcase"></i> Experiencia Laboral</h5>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Cuéntanos sobre tus últimos empleos para que las empresas te encuentren.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/accounts/perfil/1" class="btn btn-outline-secondary">Anterior</a>
+                    <button type="submit" class="btn btn-primary shadow">Guardar y Continuar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

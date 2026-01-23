@@ -16,45 +16,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.shortcuts import render, redirect
+
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth.decorators import login_required
 
-# Vista Home Inteligente (Redirecciona según Rol)
-@login_required(login_url='landing')
-def dashboard_view(request):
-    user = request.user
-    if user.tipo_usuario == 'admin' or user.is_staff:
-        return render(request, 'dashboard/admin.html')
-    elif user.tipo_usuario == 'empresa':
-        return render(request, 'dashboard/empresa.html')
-    elif user.tipo_usuario == 'candidato':
-        return render(request, 'dashboard/candidato.html')
-    return render(request, 'home.html') # Fallback
-
-def landing_view(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    return render(request, 'landing.html')
+# Vista Home Temporal
+@login_required
+def home_view(request):
+    return render(request, 'home.html')
 
 from django.shortcuts import render
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
+from django.conf import settings  # Importante
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('locations/', include('locations.urls')),
-    path('dashboard/', dashboard_view, name='home'),
-    path('', landing_view, name='landing'),
-    path('admin/', admin.site.urls), # El correcto es admin.site.urls
+    path('', home_view, name='home'),
+    path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
 ]
-
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

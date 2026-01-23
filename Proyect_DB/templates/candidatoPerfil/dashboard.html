@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Mi Perfil Profesional</h2>
+    <div class="card">
+        <div class="card-body">
+            <h3>{{ candidato.nombre_completo }}</h3>
+            <p><strong>Título:</strong> {{ candidato.titulo_profesional|default:"No definido" }}</p>
+            <p><strong>Resumen:</strong> {{ candidato.resumen_perfil }}</p>
+        </div>
+    </div>
+
+    <h4 class="mt-4">Experiencia Laboral</h4>
+    <ul class="list-group">
+        {% for exp in experiencias %}
+            <li class="list-group-item">
+                <strong>{{ exp.cargo }}</strong> en {{ exp.empresa }} 
+                <span class="text-muted">({{ exp.fecha_inicio }} - {{ exp.fecha_fin|default:"Actualidad" }})</span>
+            </li>
+        {% empty %}
+            <p>No has agregado experiencias aún.</p>
+        {% endfor %}
+    </ul>
+    <h4 class="mt-4">Documentos Adjuntos</h4>
+<div class="list-group">
+    {% for doc in candidato.documentos.all %}
+        <div class="list-group-item d-flex justify-content-between align-items-center">
+            <span><i class="far fa-file-pdf text-danger"></i> {{ doc.nombre_archivo }}</span>
+            <a href="{{ doc.url_archivo.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                Ver PDF
+            </a>
+        </div>
+    {% empty %}
+        <p class="text-muted">No has subido ningún documento aún.</p>
+    {% endfor %}
+</div>
+    <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-primary mt-3">Editar mi información</a>
+</div>
+{% endblock %}
