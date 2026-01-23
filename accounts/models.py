@@ -1,4 +1,5 @@
 from django.db import models
+from django import forms
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
@@ -41,8 +42,8 @@ class Usuario(AbstractUser):
     tipo_usuario = models.CharField(max_length=20, choices=TipoUsuario.choices)
     estado = models.BooleanField(default=True, help_text="true=activo, false=baneado")
 
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email', 'tipo_usuario']
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'tipo_usuario']
 
     def __str__(self):
         return self.email
@@ -152,3 +153,25 @@ class Educacion(models.Model):
     class Meta:
         verbose_name = "Educación"
         verbose_name_plural = "Educación"
+
+
+class Documento(models.Model):
+    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='documento')
+    nombre_archivo = models.CharField(max_length=255)
+    url_archivo = models.FileField(upload_to='cvs/')
+    tipo_documento = models.CharField(max_length=50, help_text="CV, Carta, Certificado")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"CV de {self.candidato.nombre_completo}"
+    
+class DocumentoForm(forms.ModelForm):
+    class Meta:
+        model = Documento
+        fields = ['nombre_archivo', 'url_archivo']
+    
+    # Hacemos que los campos no sean obligatorios
+    def __init__(self, *args, **kwargs):
+        super(DocumentoForm, self).__init__(*args, **kwargs)
+        self.fields['nombre_archivo'].required = False
+        self.fields['url_archivo'].required = False

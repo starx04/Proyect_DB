@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import Usuario
+from .models import Usuario, Candidato, ExperienciaLaboral, Documento
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -13,5 +13,31 @@ class CustomUserCreationForm(UserCreationForm):
         }
 
 class CustomAuthenticationForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de usuario'}))
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Email o Usuario'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}))
+
+
+class CandidatoPerfilForm(forms.ModelForm):
+    class Meta:
+        model = Candidato
+        fields = ['titulo_profesional', 'resumen_perfil', 'telefono', 'salario_esperado']
+
+class ExperienciaForm(forms.ModelForm):
+    class Meta:
+        model = ExperienciaLaboral
+        fields = ['empresa', 'cargo', 'fecha_inicio', 'fecha_fin', 'descripcion']
+        widgets = {
+            'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
+        }
+        
+class DocumentoForm(forms.ModelForm):
+    class Meta:
+        model = Documento
+        fields = ['nombre_archivo', 'url_archivo']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Esto permite que el formulario acepte estar vacío
+        self.fields['nombre_archivo'].required = False
+        self.fields['url_archivo'].required = False
