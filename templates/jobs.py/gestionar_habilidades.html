@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Requisitos para: <span class="text-primary">{{ oferta.titulo }}</span></h3>
+    <a href="{% url 'jobs:dashboard_empresa' %}" class="btn btn-outline-secondary mb-3">&larr; Volver al Panel</a>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">Agregar Habilidad</div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary w-100">Agregar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Habilidades Requeridas</div>
+                <ul class="list-group list-group-flush">
+                    {% for item in habilidades %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ item.habilidad.nombre }}</strong>
+                            <span class="badge bg-info text-dark">{{ item.get_nivel_requerido_display }}</span>
+                            {% if item.es_obligatorio %}
+                                <span class="badge bg-danger">Obligatorio</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Opcional</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'jobs:eliminar_habilidad' item.id %}" class="btn btn-sm btn-danger">Eliminar</a>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-muted">Esta oferta aún no pide habilidades específicas.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

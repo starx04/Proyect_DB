@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Panel de Empresa: {{ empresa.nombre_empresa }}</h2>
+        <div>
+            <a href="{% url 'jobs:crear_oferta' %}" class="btn btn-primary">+ Nueva Oferta</a>
+            <a href="{% url 'jobs:editar_perfil_empresa' %}" class="btn btn-outline-secondary">Editar Perfil</a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">Mis Ofertas Publicadas</div>
+        <div class="card-body">
+            {% if ofertas %}
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Publicada</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for oferta in ofertas %}
+                    <tr>
+                        <td>{{ oferta.titulo }}</td>
+                        <td>{{ oferta.fecha_publicacion|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="badge {% if oferta.estado == 'publicada' %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ oferta.get_estado_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'jobs:gestionar_habilidades' oferta.id %}" class="btn btn-sm btn-info text-white">Habilidades</a>
+                            <a href="{% url 'jobs:editar_oferta' oferta.id %}" class="btn btn-sm btn-warning">Editar</a>
+                            <form action="{% url 'jobs:eliminar_oferta' oferta.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar esta oferta?');">X</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="text-muted">No tienes ofertas activas. ¡Crea una nueva!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
