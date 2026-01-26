@@ -1,0 +1,6 @@
+Django
+psycopg[binary]
+customtkinter
+Pillow
+pytz
+darkdetect
