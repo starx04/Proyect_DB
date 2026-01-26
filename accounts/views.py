@@ -65,21 +65,25 @@ def perfil_candidato_step(request):
 @login_required
 def dashboard_candidato(request):
     candidato = request.user.perfil_candidato
-    # Obtenemos sus datos relacionados
+
     experiencias = candidato.experiencia_laboral.all().order_by('-fecha_inicio')
     educacion = candidato.educacion.all().order_by('-fecha_inicio')
     
-    # Datos nuevos
-    postulaciones = candidato.postulaciones.select_related('oferta', 'oferta__empresa').order_by('-fecha_postulacion')[:5]
-    ofertas_guardadas = candidato.ofertas_guardadas.select_related('oferta', 'oferta__empresa').order_by('-created_at')[:5]
+    postulaciones = candidato.postulaciones.select_related(
+        'oferta', 'oferta__empresa'
+    ).order_by('-fecha_postulacion')[:5]
+
+    ofertas_guardadas = candidato.ofertas_guardadas_jobs.select_related(
+        'oferta', 'oferta__empresa'
+    ).order_by('-created_at')[:5]
+
     habilidades = candidato.habilidades.select_related('habilidad').all()
     idiomas = candidato.idiomas.select_related('idioma').all()
     
-    # Stats
     stats = {
         'postulaciones_activas': candidato.postulaciones.exclude(estado='rechazado').count(),
         'entrevistas': candidato.postulaciones.filter(estado='entrevista').count(),
-        'guardadas': candidato.ofertas_guardadas.count()
+        'guardadas': candidato.ofertas_guardadas_jobs.count()
     }
     
     return render(request, 'candidatoPerfil/dashboard.html', {
@@ -92,6 +96,7 @@ def dashboard_candidato(request):
         'idiomas': idiomas,
         'stats': stats
     })
+
 
 @login_required
 def wizard_perfil(request, paso=1):

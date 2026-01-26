@@ -267,7 +267,7 @@
             <div class="card-section">
                 <div class="card-header">
                     <div class="card-title"><i class="fas fa-history text-primary"></i> Postulaciones Recientes</div>
-                    <a href="#" class="btn btn-sm btn-link text-decoration-none">Ver todas</a>
+                    <a href="{% url 'jobs:mis_postulaciones' %}" class="btn btn-sm btn-link text-decoration-none">Ver todas</a>
                 </div>
                 <div class="activity-list">
                     {% for postulacion in postulaciones %}
