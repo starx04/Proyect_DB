@@ -1,18 +1,19 @@
-{% extends "base.html" %}
+ {% extends "base.html" %}
 
 {% block title %}{{ oferta.titulo }} | JobBoard{% endblock %}
 
 {% block content %}
 <style>
-    /* STANDALONE PREMIUM DETAIL STYLES */
+    /* PALETA DE DETALLE PARA FONDO CLARO */
     :root {
-        --dt-primary: #3b82f6;
-        --dt-secondary: #8b5cf6;
-        --dt-accent: #10b981;
-        --dt-card: rgba(20, 22, 32, 0.7);
-        --dt-border: rgba(255, 255, 255, 0.1);
-        --dt-text: #ffffff;
-        --dt-text-muted: #94a3b8;
+        --dt-primary: #2563eb;          /* Azul principal */
+        --dt-secondary: #7c3aed;        /* Violeta para acentos */
+        --dt-accent: #059669;           /* Verde para estados positivos */
+        --dt-card: #ffffff;             /* Tarjetas blancas */
+        --dt-border: #e2e8f0;           /* Bordes suaves */
+        --dt-text: #0f172a;             /* Texto casi negro */
+        --dt-text-muted: #64748b;       /* Texto secundario gris */
+        --dt-bg-soft: #f8fafc;          /* Fondos de secciones internas */
     }
 
     .dt-wrapper {
@@ -28,11 +29,10 @@
 
     .dt-card {
         background: var(--dt-card);
-        backdrop-filter: blur(15px);
         border: 1px solid var(--dt-border);
         border-radius: 28px;
         padding: 50px;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
     }
 
     .dt-header {
@@ -42,7 +42,7 @@
     }
 
     .dt-badge {
-        background: rgba(139, 92, 246, 0.1);
+        background: rgba(124, 58, 237, 0.1);
         color: var(--dt-secondary);
         padding: 8px 16px;
         border-radius: 50px;
@@ -59,7 +59,8 @@
         font-weight: 800;
         line-height: 1.1;
         margin-bottom: 20px;
-        background: linear-gradient(135deg, #fff, var(--dt-primary));
+        /* Gradiente oscuro para lectura clara */
+        background: linear-gradient(135deg, #0f172a, var(--dt-primary));
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -83,6 +84,10 @@
         display: flex;
         align-items: center;
         gap: 12px;
+        color: var(--dt-text);
+    }
+
+    .dt-section-title i {
         color: var(--dt-primary);
     }
 
@@ -94,7 +99,7 @@
     }
 
     .skill-tag {
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--dt-bg-soft);
         border: 1px solid var(--dt-border);
         padding: 10px 20px;
         border-radius: 14px;
@@ -102,9 +107,10 @@
         align-items: center;
         gap: 10px;
         transition: all 0.3s ease;
+        color: var(--dt-text);
     }
 
-    .skill-tag:hover { background: rgba(255, 255, 255, 0.08); }
+    .skill-tag:hover { border-color: var(--dt-primary); }
 
     .skill-level {
         background: var(--dt-primary);
@@ -116,7 +122,7 @@
         text-transform: uppercase;
     }
 
-    /* Sidebar Components */
+    /* Sidebar */
     .sticky-sidebar {
         position: sticky;
         top: 100px;
@@ -129,14 +135,15 @@
         border: 1px solid var(--dt-border);
         border-radius: 24px;
         padding: 30px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
     }
 
     .info-item {
         margin-bottom: 25px;
     }
 
-    .info-label { font-size: 0.85rem; color: var(--dt-text-muted); margin-bottom: 5px; text-transform: uppercase; }
-    .info-value { font-size: 1.1rem; font-weight: 600; }
+    .info-label { font-size: 0.85rem; color: var(--dt-text-muted); margin-bottom: 5px; text-transform: uppercase; font-weight: 700; }
+    .info-value { font-size: 1.1rem; font-weight: 600; color: var(--dt-text); }
     .salary-value { font-size: 1.8rem; font-weight: 800; color: var(--dt-primary); }
 
     .btn-apply {
@@ -148,32 +155,53 @@
         font-size: 1.1rem;
         width: 100%;
         border: none;
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
         transition: all 0.3s ease;
         text-align: center;
+        text-decoration: none;
+        display: block;
     }
 
-    .btn-apply:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4); }
+    .btn-apply:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3); color: white; }
 
     .status-applied {
-        background: rgba(16, 185, 129, 0.1);
+        background: rgba(16, 185, 129, 0.05);
         border: 1px solid rgba(16, 185, 129, 0.2);
         padding: 20px;
         border-radius: 16px;
         text-align: center;
         color: var(--dt-accent);
     }
+
+    /* Redes sociales en sidebar */
+    .share-btn {
+        width: 40px; 
+        height: 40px; 
+        background: var(--dt-bg-soft); 
+        border: 1px solid var(--dt-border);
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        color: var(--dt-text-muted);
+        transition: all 0.2s;
+    }
+
+    .share-btn:hover {
+        background: var(--dt-primary);
+        color: white;
+        border-color: var(--dt-primary);
+    }
 </style>
 
-<div class="fade-in-up">
+<div class="fade-in-up mt-4">
     <div style="margin-bottom: 30px;">
-        <a href="{% url 'jobs:lista_ofertas' %}" style="color: var(--dt-text-muted); text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+        <a href="{% url 'jobs:lista_ofertas' %}" style="color: var(--dt-primary); text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 8px;">
             <i class="fas fa-arrow-left"></i> Volver al listado
         </a>
     </div>
 
     <div class="dt-wrapper">
-        <!-- Main Content -->
         <div class="dt-card">
             <header class="dt-header">
                 <span class="dt-badge">{{ oferta.get_tipo_contrato_display }}</span>
@@ -186,7 +214,7 @@
 
             <div class="dt-section">
                 <h3 class="dt-section-title"><i class="fas fa-align-left"></i> Descripción del Puesto</h3>
-                <div style="color: var(--dt-text-muted); line-height: 1.8; font-size: 1.1rem;">
+                <div style="color: #334155; line-height: 1.8; font-size: 1.1rem;">
                     {{ oferta.descripcion|linebreaks }}
                 </div>
             </div>
@@ -206,12 +234,11 @@
             </div>
         </div>
 
-        <!-- Sidebar -->
         <div class="sticky-sidebar">
             <div class="side-card">
                 <div class="info-item">
                     <div class="info-label">Modalidad</div>
-                    <div class="info-value"><i class="fas fa-laptop-house me-2"></i> {{ oferta.get_modalidad_display|default:"Presencial" }}</div>
+                    <div class="info-value"><i class="fas fa-laptop-house me-2" style="color: var(--dt-primary);"></i> {{ oferta.get_modalidad_display|default:"Presencial" }}</div>
                 </div>
                 <div class="info-item">
                     <div class="info-label">Rango Salarial</div>
@@ -242,12 +269,12 @@
                                 </form>
                             {% endif %}
                         {% else %}
-                            <div style="color: var(--dt-text-muted); text-align: center; font-size: 0.9rem; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px;">
+                            <div style="color: var(--dt-text-muted); text-align: center; font-size: 0.9rem; background: var(--dt-bg-soft); padding: 15px; border-radius: 12px; border: 1px solid var(--dt-border);">
                                 Solo candidatos pueden aplicar
                             </div>
                         {% endif %}
                     {% else %}
-                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn-apply" style="text-decoration: none; display: block;">
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn-apply">
                             Ingresar para Aplicar
                         </a>
                     {% endif %}
@@ -257,9 +284,9 @@
             <div class="side-card" style="text-align: center;">
                 <div class="info-label" style="margin-bottom: 15px;">Compartir</div>
                 <div style="display: flex; justify-content: center; gap: 15px;">
-                    <a href="#" style="width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" style="width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;"><i class="fab fa-twitter"></i></a>
-                    <a href="#" style="width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;"><i class="fas fa-link"></i></a>
+                    <a href="#" class="share-btn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="share-btn"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="share-btn"><i class="fas fa-link"></i></a>
                 </div>
             </div>
         </div>

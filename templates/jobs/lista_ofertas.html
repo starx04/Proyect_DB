@@ -4,14 +4,15 @@
 
 {% block content %}
 <style>
-    /* STANDALONE PREMIUM LISTING STYLES */
+    /* PALETA DE COLORES REFINADA PARA MODO CLARO */
     :root {
-        --ls-primary: #3b82f6;
-        --ls-secondary: #8b5cf6;
-        --ls-card: rgba(20, 22, 32, 0.7);
-        --ls-border: rgba(255, 255, 255, 0.08);
-        --ls-text: #ffffff;
-        --ls-text-muted: #94a3b8;
+        --ls-primary: #2563eb;          /* Azul vibrante */
+        --ls-secondary: #7c3aed;        /* Violeta para acentos */
+        --ls-card: #ffffff;             /* Fondo blanco para tarjetas */
+        --ls-border: #e2e8f0;           /* Gris suave para bordes */
+        --ls-text: #1e293b;             /* Azul oscuro casi negro para texto principal */
+        --ls-text-muted: #64748b;       /* Gris para textos secundarios */
+        --ls-bg-soft: #f8fafc;          /* Fondo muy claro para secciones internas */
     }
 
     .ls-header {
@@ -24,7 +25,8 @@
     .ls-title h1 {
         font-size: 2.5rem;
         font-weight: 800;
-        background: linear-gradient(135deg, #fff, var(--ls-primary));
+        /* Gradiente oscuro para que se lea sobre blanco */
+        background: linear-gradient(135deg, #0f172a, var(--ls-primary));
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -32,10 +34,10 @@
     }
 
     .ls-count {
-        background: rgba(59, 130, 246, 0.1);
+        background: rgba(37, 99, 235, 0.1);
         padding: 10px 20px;
         border-radius: 12px;
-        border: 1px solid rgba(59, 130, 246, 0.2);
+        border: 1px solid rgba(37, 99, 235, 0.2);
         color: var(--ls-primary);
         font-weight: 700;
     }
@@ -48,7 +50,6 @@
 
     .job-card {
         background: var(--ls-card);
-        backdrop-filter: blur(12px);
         border: 1px solid var(--ls-border);
         border-radius: 24px;
         padding: 35px;
@@ -58,6 +59,8 @@
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        /* Sombra suave para dar profundidad sobre fondo blanco */
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     }
 
     .job-card::after {
@@ -72,8 +75,8 @@
 
     .job-card:hover {
         transform: translateY(-8px);
-        border-color: rgba(59, 130, 246, 0.3);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        border-color: var(--ls-primary);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
 
     .job-card:hover::after { opacity: 1; }
@@ -81,7 +84,7 @@
     .j-icon-bg {
         width: 50px;
         height: 50px;
-        background: rgba(255, 255, 255, 0.03);
+        background: var(--ls-bg-soft);
         border-radius: 14px;
         display: flex;
         align-items: center;
@@ -99,12 +102,13 @@
         font-size: 0.75rem;
         font-weight: 700;
         text-transform: uppercase;
-        background: rgba(139, 92, 246, 0.1);
+        background: rgba(124, 58, 237, 0.1);
         color: var(--ls-secondary);
-        border: 1px solid rgba(139, 92, 246, 0.2);
+        border: 1px solid rgba(124, 58, 237, 0.2);
     }
 
     .j-title {
+        color: var(--ls-text);
         font-size: 1.4rem;
         font-weight: 700;
         margin-bottom: 15px;
@@ -126,8 +130,8 @@
     }
 
     .j-salary-box {
-        background: rgba(59, 130, 246, 0.05);
-        border: 1px solid rgba(59, 130, 246, 0.1);
+        background: var(--ls-bg-soft);
+        border: 1px solid var(--ls-border);
         padding: 15px;
         border-radius: 16px;
         margin-bottom: 25px;
@@ -137,8 +141,8 @@
     .j-salary-value { font-weight: 800; color: var(--ls-primary); font-size: 1.2rem; }
 
     .btn-j-details {
-        background: rgba(255, 255, 255, 0.05);
-        color: white;
+        background: #f1f5f9;
+        color: var(--ls-text);
         padding: 14px;
         border-radius: 12px;
         text-align: center;
@@ -154,12 +158,13 @@
 
     .btn-j-details:hover {
         background: var(--ls-primary);
+        color: white;
         border-color: var(--ls-primary);
-        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
     }
 </style>
 
-<div class="fade-in-up">
+<div class="fade-in-up mt-4">
     <div class="ls-header">
         <div class="ls-title">
             <h1>Ofertas Disponibles</h1>
@@ -175,7 +180,7 @@
         <div class="job-card">
             <div>
                 <div class="j-icon-bg">
-                    <i class="fas fa-briefcase" style="color: var(--ls-text-muted);"></i>
+                    <i class="fas fa-briefcase" style="color: var(--ls-primary);"></i>
                 </div>
                 <span class="j-badge">{{ oferta.get_tipo_contrato_display }}</span>
 
@@ -197,9 +202,9 @@
                     <div class="j-salary-label">Salario Estimado</div>
                     <div class="j-salary-value">
                         {% if oferta.salario_min %}
-                        ${{ oferta.salario_min|floatformat:0 }}{% if oferta.salario_max %} - ${{ oferta.salario_max|floatformat:0 }}{% endif %}
+                            ${{ oferta.salario_min|floatformat:0 }}{% if oferta.salario_max %} - ${{ oferta.salario_max|floatformat:0 }}{% endif %}
                         {% else %}
-                        A convenir
+                            A convenir
                         {% endif %}
                     </div>
                 </div>
@@ -211,7 +216,7 @@
         </div>
         {% empty %}
         <div style="grid-column: 1 / -1; text-align: center; padding: 100px;">
-            <i class="fas fa-search" style="font-size: 4rem; opacity: 0.1; margin-bottom: 20px;"></i>
+            <i class="fas fa-search" style="font-size: 4rem; color: var(--ls-border); margin-bottom: 20px;"></i>
             <h2 style="color: var(--ls-text-muted);">No hay ofertas en este momento.</h2>
             <p style="color: var(--ls-text-muted);">Vuelve a intentarlo más tarde.</p>
         </div>

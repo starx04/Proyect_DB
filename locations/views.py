@@ -10,16 +10,3 @@ def load_cities(request):
     provincia_id = request.GET.get('provincia_id')
     cities = Ciudad.objects.filter(provincia_id=provincia_id).order_by('nombre')
     return JsonResponse(list(cities.values('id', 'nombre')), safe=False)
-
-def is_admin(user):
-    return user.is_staff or user.is_superuser
-
-@login_required
-@user_passes_test(is_admin)
-def admin_locations_view(request):
-    """
-    Vista simple para que el admin visualice ubicaciones.
-    (En una implementación completa, aquí irían formularios CRUD).
-    """
-    paises = Pais.objects.all().prefetch_related('provincias__ciudades')
-    return render(request, 'locations/admin_panel.html', {'paises': paises})

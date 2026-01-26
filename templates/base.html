@@ -34,9 +34,6 @@
             <ul class="nav-links">
                 {% if user.is_authenticated %}
                 <li><a href="/" class="{% if request.path == '/' %}active{% endif %}">Inicio</a></li>
-                {% if user.is_staff or user.is_superuser %}
-                <li><a href="{% url 'admin_locations' %}">Ubicaciones</a></li>
-                {% endif %}
 
                 <li style="display: flex; align-items: center; gap: 1rem;">
                     <span style="color: var(--text-secondary); font-size: 0.9rem;">
@@ -51,8 +48,14 @@
                     </form>
                 </li>
                 {% else %}
-                <li><a href="{% url 'login' %}">Ingresar</a></li>
-                <li><a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a></li>
+
+                <li class="me-3">
+                    <a href="{% url 'login' %}" class="text-decoration-none">Ingresar</a>
+                </li>
+                <li>
+                    <a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a>
+                </li>
+
                 {% endif %}
             </ul>
         </div>

@@ -20,7 +20,7 @@ class AppBolsaEmpleo(ctk.CTk):
             "port": "5432",
             "user": "openpg",
             "password": "openpgpwd",
-            "database": "db_bolsa_empleo"
+            "database": "db_bolsa_empleo_app"
         }
 
         self.selected_user_id = None  # Almacena el ID del usuario seleccionado para Modificar/Eliminar

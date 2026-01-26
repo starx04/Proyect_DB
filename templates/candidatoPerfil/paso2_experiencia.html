@@ -328,28 +328,32 @@
                     </div>
 
                     <div class="section-divider">Extras</div>
-                    <div class="row g-3">
+                    <div class="row g-4">
                         <div class="col-md-6">
-                            <div class="form-group"><label>Tipo Contrato</label>{{ form.tipo_contrato }}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group"><label>URL Portafolio/Proyecto</label>{{ form.proyectos_destacados
-                                }}</div>
+                            <div class="form-group">
+                                <label for="{{ form.tipo_contrato.id_for_label }}">Tipo de Contrato</label>
+                                {{ form.tipo_contrato }}
+                                {% if form.tipo_contrato.errors %}
+                                <small class="text-danger">{{ form.tipo_contrato.errors }}</small>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="wz-footer">
-                    <a href="{% url 'wizard_perfil' paso=1 %}" class="btn-back">
-                        <i class="fas fa-arrow-left"></i> Volver al paso anterior
-                    </a>
-                    <button type="submit" class="btn-next" id="submitBtn">
-                        Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>
-                    </button>
                 </div>
-            </form>
         </div>
+
+        <div class="wz-footer">
+            <a href="{% url 'wizard_perfil' paso=1 %}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver al paso anterior
+            </a>
+            <button type="submit" class="btn-next" id="submitBtn">
+                Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>
+            </button>
+        </div>
+        </form>
     </div>
+</div>
 </div>
 
 <script>
