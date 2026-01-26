@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="fade-in-up">
+    <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-secondary mb-2" style="text-decoration: none;">← Volver al
+        listado</a>
+
+    <div class="row">
+        <div class="card" style="width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h1 style="color: var(--primary-color); margin-bottom: 5px;">{{ oferta.titulo }}</h1>
+                    <p style="font-size: 1.2rem; color: #666;">{{ oferta.empresa.nombre_empresa }} - {{
+                        oferta.ciudad|default:"Ciudad no definida" }}</p>
+                </div>
+                <div style="text-align: right;">
+                    <span class="badge badge-info" style="font-size: 1rem;">{{ oferta.get_tipo_contrato_display
+                        }}</span>
+                    <p style="margin-top: 5px; font-size: 0.9rem; color: #888;">Publicado el {{
+                        oferta.fecha_publicacion|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="content-section">
+                <h3>Descripción del Puesto</h3>
+                <p style="line-height: 1.6;">{{ oferta.descripcion|linebreaks }}</p>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col">
+                    <h3>Requisitos y Habilidades</h3>
+                    <ul>
+                        {% for hab in oferta.habilidades_requeridas.all %}
+                        <li>{{ hab.habilidad.nombre }} - <strong>Nivel: {{ hab.get_nivel_requerido_display }}</strong>
+                        </li>
+                        {% empty %}
+                        <li>No se especificaron habilidades técnicas adicionales.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3>Detalles Adicionales</h3>
+                    <p><strong>Modalidad:</strong> {{ oferta.modalidad|default:"Presencial" }}</p>
+                    <p><strong>Salario:</strong>
+                        {% if oferta.salario_min %}
+                        ${{ oferta.salario_min }}{% if oferta.salario_max %} - ${{ oferta.salario_max }}{% endif %}
+                        {% else %}
+                        A convenir
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <hr>
+
+            <div style="text-align: center; margin-top: 20px;">
+                {% if user.is_authenticated %}
+                {% if user.tipo_usuario == 'candidato' %}
+                {% if ya_postulado %}
+                <div class="alert alert-info">
+                    <i class="fas fa-check-circle"></i> Ya te has postulado a esta oferta. Estás en el proceso de
+                    selección.
+                </div>
+                {% else %}
+                <form action="{% url 'jobs:postularse' oferta.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary"
+                        style="padding: 15px 40px; font-size: 1.2rem;">POSTULARSE AHORA</button>
+                </form>
+                {% endif %}
+                {% else %}
+                <div class="alert alert-warning">
+                    Solo los candidatos pueden postularse.
+                </div>
+                {% endif %}
+                {% else %}
+                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">Inicia sesión para
+                    postularte</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

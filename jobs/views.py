@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .models import Empresa, OfertaEmpleo, OfertaHabilidad
+from .models import Empresa, OfertaEmpleo, OfertaHabilidad, Postulacion, EstadoPostulacion
 from .forms import EmpresaForm, OfertaEmpleoForm, OfertaHabilidadForm
 
 # --- GESTIÓN DE EMPRESA ---
@@ -13,9 +13,14 @@ def dashboard_empresa(request):
         empresa = Empresa.objects.get(usuario=request.user)
     except Empresa.DoesNotExist:
         # Si el usuario es empresa pero no tiene perfil, lo mandamos a crear uno
-        return redirect('editar_perfil_empresa')
+        return redirect('jobs:editar_perfil_empresa')
 
     ofertas = OfertaEmpleo.objects.filter(empresa=empresa).order_by('-fecha_publicacion')
+    
+    # Inyectar el número de postulantes en cada oferta
+    for oferta in ofertas:
+        oferta.num_postulantes = oferta.postulaciones.count()
+        
     return render(request, 'jobs/dashboard_empresa.html', {'ofertas': ofertas, 'empresa': empresa})
 
 @login_required
@@ -33,7 +38,7 @@ def editar_perfil_empresa(request):
             nueva_empresa.usuario = request.user # Asignamos el usuario conectado
             nueva_empresa.save()
             messages.success(request, 'Perfil de empresa actualizado correctamente.')
-            return redirect('dashboard_empresa')
+            return redirect('jobs:dashboard_empresa')
     else:
         form = EmpresaForm(instance=empresa)
 
@@ -54,7 +59,7 @@ def crear_oferta(request):
         empresa = Empresa.objects.get(usuario=request.user)
     except Empresa.DoesNotExist:
         messages.error(request, 'Debes completar tu perfil de empresa antes de publicar ofertas.')
-        return redirect('editar_perfil_empresa')
+        return redirect('jobs:editar_perfil_empresa')
 
     if request.method == 'POST':
         form = OfertaEmpleoForm(request.POST)
@@ -63,7 +68,7 @@ def crear_oferta(request):
             oferta.empresa = empresa
             oferta.save()
             messages.success(request, 'Oferta creada. Ahora añade las habilidades requeridas.')
-            return redirect('gestionar_habilidades', oferta_id=oferta.id)
+            return redirect('jobs:gestionar_habilidades', oferta_id=oferta.id)
     else:
         form = OfertaEmpleoForm()
 
@@ -80,7 +85,7 @@ def editar_oferta(request, oferta_id):
         if form.is_valid():
             form.save()
             messages.success(request, 'Oferta actualizada correctamente.')
-            return redirect('dashboard_empresa')
+            return redirect('jobs:dashboard_empresa')
     else:
         form = OfertaEmpleoForm(instance=oferta)
 
@@ -95,7 +100,7 @@ def eliminar_oferta(request, oferta_id):
         oferta.delete()
         messages.success(request, 'Oferta eliminada.')
     
-    return redirect('dashboard_empresa')
+    return redirect('jobs:dashboard_empresa')
 
 
 # --- GESTIÓN DE HABILIDADES DE LA OFERTA ---
@@ -118,7 +123,7 @@ def gestionar_habilidades(request, oferta_id):
                 nueva_relacion.oferta = oferta
                 nueva_relacion.save()
                 messages.success(request, 'Habilidad agregada.')
-            return redirect('gestionar_habilidades', oferta_id=oferta.id)
+            return redirect('jobs:gestionar_habilidades', oferta_id=oferta.id)
     else:
         form = OfertaHabilidadForm()
 
@@ -131,12 +136,83 @@ def gestionar_habilidades(request, oferta_id):
 @login_required
 def eliminar_habilidad(request, habilidad_id):
     habilidad_rel = get_object_or_404(OfertaHabilidad, id=habilidad_id)
-    # Seguridad: verificar que la oferta pertenece a la empresa actual
     if habilidad_rel.oferta.empresa.usuario != request.user:
         messages.error(request, "No tienes permiso para realizar esta acción.")
-        return redirect('dashboard_empresa')
+        return redirect('jobs:dashboard_empresa')
     
     oferta_id = habilidad_rel.oferta.id
     habilidad_rel.delete()
     messages.success(request, 'Habilidad eliminada de la oferta.')
-    return redirect('gestionar_habilidades', oferta_id=oferta_id)
+    return redirect('jobs:gestionar_habilidades', oferta_id=oferta_id)
+
+
+# --- FLUJO DE CANDIDATO ---
+
+def lista_ofertas(request):
+    """Listado público de ofertas para los candidatos."""
+    ofertas = OfertaEmpleo.objects.filter(estado='publicada').order_by('-fecha_publicacion')
+    return render(request, 'jobs/lista_ofertas.html', {'ofertas': ofertas})
+
+def detallar_oferta(request, oferta_id):
+    """Detalle de la oferta y botón de postulación."""
+    oferta = get_object_or_404(OfertaEmpleo, id=oferta_id)
+    ya_postulado = False
+    
+    if request.user.is_authenticated and request.user.tipo_usuario == 'candidato':
+        ya_postulado = Postulacion.objects.filter(oferta=oferta, candidato=request.user.perfil_candidato).exists()
+        
+    return render(request, 'jobs/detallar_oferta.html', {
+        'oferta': oferta,
+        'ya_postulado': ya_postulado
+    })
+
+@login_required
+def postularse(request, oferta_id):
+    """Crea una nueva postulación para el candidato logueado."""
+    if request.user.tipo_usuario != 'candidato':
+        messages.error(request, 'Solo los candidatos pueden postularse a ofertas.')
+        return redirect('home')
+        
+    oferta = get_object_or_404(OfertaEmpleo, id=oferta_id)
+    candidato = request.user.perfil_candidato
+    
+    postulacion, created = Postulacion.objects.get_or_create(oferta=oferta, candidato=candidato)
+    
+    if created:
+        messages.success(request, f'¡Te has postulado con éxito a "{oferta.titulo}"!')
+    else:
+        messages.warning(request, 'Ya te habías postulado a esta oferta anteriormente.')
+        
+    return redirect('jobs:detallar_oferta', oferta_id=oferta.id)
+
+
+# --- GESTIÓN DE POSTULANTES ---
+
+@login_required
+def ver_postulantes(request, oferta_id):
+    """Permite a la empresa ver quiénes aplicaron a su oferta."""
+    empresa = get_object_or_404(Empresa, usuario=request.user)
+    oferta = get_object_or_404(OfertaEmpleo, id=oferta_id, empresa=empresa)
+    postulaciones = oferta.postulaciones.select_related('candidato__usuario').order_by('-fecha_postulacion')
+    
+    return render(request, 'jobs/ver_postulantes.html', {
+        'oferta': oferta,
+        'postulaciones': postulaciones
+    })
+
+@login_required
+def cambiar_estado_postulacion(request, postulacion_id):
+    """Permite aprobar o rechazar una postulación."""
+    postulacion = get_object_or_404(Postulacion, id=postulacion_id)
+    
+    if postulacion.oferta.empresa.usuario != request.user:
+        messages.error(request, 'No tienes permiso para gestionar esta postulación.')
+        return redirect('jobs:dashboard_empresa')
+        
+    nuevo_estado = request.POST.get('estado')
+    if nuevo_estado in dict(EstadoPostulacion.choices):
+        postulacion.estado = nuevo_estado
+        postulacion.save()
+        messages.success(request, f'Estado de la postulación actualizado correctamente.')
+    
+    return redirect('jobs:ver_postulantes', oferta_id=postulacion.oferta.id)

@@ -1,50 +1,91 @@
 {% extends 'base.html' %}
 
-{% block title %}Dashboard - JobBoard{% endblock %}
+{% block title %}Inicio - JobBoard{% endblock %}
 
 {% block content %}
 <div class="row fade-in">
+    {% if not user.is_authenticated %}
+    <!-- LANDING PAGE FOR VISITORS -->
+    <div class="text-center" style="max-width: 800px; margin: 4rem auto;">
+        <h1 style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1.5rem;">Job Connect</h1>
+        <p style="font-size: 1.25rem; color: #666; margin-bottom: 2.5rem; line-height: 1.8;">
+            Bienvenido a la bolsa de empleo líder. Nuestra plataforma conecta a los mejores talentos con las empresas
+            más innovadoras del mercado. Gestiona tu perfil, aplica a vacantes en segundos y da el siguiente paso en tu
+            carrera profesional.
+        </p>
+
+        <div class="card shadow-sm p-5"
+            style="background: white; border: 1px solid var(--border-color); border-radius: 20px;">
+            <h2 style="margin-bottom: 2rem;">¿Listo para comenzar?</h2>
+            <a href="{% url 'login' %}" class="btn btn-primary"
+                style="padding: 1.2rem 3rem; font-size: 1.2rem; border-radius: 50px; text-transform: uppercase; letter-spacing: 1px;">
+                Integrate a nuestra comunidad
+            </a>
+            <p class="mt-1" style="color: #888;">Únete a miles de profesionales y empresas hoy mismo.</p>
+        </div>
+
+        <div
+            style="margin-top: 5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 3rem;">
+            <div>
+                <i class="fas fa-search"
+                    style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                <h4>Busca Empleos</h4>
+                <p class="small text-muted">Explora miles de ofertas adaptadas a tu perfil.</p>
+            </div>
+            <div>
+                <i class="fas fa-building"
+                    style="font-size: 2.5rem; color: var(--secondary-color); margin-bottom: 1rem;"></i>
+                <h4>Publica Vacantes</h4>
+                <p class="small text-muted">Encuentra al candidato ideal para tu empresa.</p>
+            </div>
+            <div>
+                <i class="fas fa-chart-line"
+                    style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: 1rem;"></i>
+                <h4>Crece Profesional</h4>
+                <p class="small text-muted">Gestiona tu trayectoria en un solo lugar.</p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- LOGGED IN DASHBOARD (CANDIDATE) -->
+    <!-- Note: This view will mostly stay untouched for potential future use or redirection -->
     <div class="card shadow-sm border-0 p-4">
         <h1 style="color: var(--primary-color);">Bienvenido al Dashboard</h1>
         <p class="text-muted">Has ingresado correctamente al sistema.</p>
 
-        <div style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-            
-            <div style="padding: 2rem; background: #f9f9f9; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #eee;" 
-                 onmouseover="this.style.background='#ffffff'; this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.05)'" 
-                 onmouseout="this.style.background='#f9f9f9'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                
+        <div
+            style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+
+            <div
+                style="padding: 2rem; background: #f9f9f9; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #eee;">
                 <i class="fas fa-user-circle" style="font-size: 3rem; color: #a8dadc; margin-bottom: 1rem;"></i>
-                
                 <div class="mb-3">
                     {% if user.perfil_candidato.titulo_profesional %}
-                        <a href="{% url 'dashboard_candidato' %}" class="btn btn-outline-primary w-100 py-2">
-                            <i class="fas fa-user-check"></i> Mi Perfil
-                        </a>
+                    <a href="{% url 'dashboard_candidato' %}" class="btn btn-outline-primary w-100 py-2">
+                        <i class="fas fa-user-check"></i> Mi Perfil
+                    </a>
                     {% else %}
-                        <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-primary w-100 py-2 shadow-sm">
-                            <i class="fas fa-user-edit"></i> Completar Perfil
-                        </a>
+                    <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-primary w-100 py-2 shadow-sm">
+                        <i class="fas fa-user-edit"></i> Completar Perfil
+                    </a>
                     {% endif %}
                 </div>
                 <p class="small text-muted mb-0">Gestiona tus datos personales y profesionales.</p>
             </div>
 
-            <div style="padding: 2rem; background: #f9f9f9; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #eee;"
-                 onmouseover="this.style.background='#ffffff'; this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 20px rgba(0,0,0,0.05)'" 
-                 onmouseout="this.style.background='#f9f9f9'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                
+            <div
+                style="padding: 2rem; background: #f9f9f9; border-radius: 12px; text-align: center; transition: all 0.3s ease; border: 1px solid #eee;">
                 <i class="fas fa-search" style="font-size: 3rem; color: #457b9d; margin-bottom: 1rem;"></i>
-                
                 <div class="mb-3">
-                    <a href="#" class="btn btn-info w-100 py-2 text-white">
+                    <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-info w-100 py-2 text-white">
                         <i class="fas fa-briefcase"></i> Buscar Empleo
                     </a>
                 </div>
                 <p class="small text-muted mb-0">Explora las ofertas disponibles para tu perfil.</p>
             </div>
-            
+
         </div>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

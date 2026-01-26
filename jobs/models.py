@@ -109,7 +109,7 @@ class Postulacion(models.Model):
         return f"{self.candidato.nombre_completo} -> {self.oferta.titulo}"
 
 class OfertasGuardadas(models.Model):
-    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='ofertas_guardadas_jobs')
+    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='ofertas_guardadas')
     oferta = models.ForeignKey(OfertaEmpleo, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

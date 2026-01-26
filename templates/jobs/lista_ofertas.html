@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="fade-in-up">
+    <h2 class="mb-2">Ofertas de Empleo Disponibles 🔍</h2>
+
+    <div class="row" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+        {% for oferta in ofertas %}
+        <div class="card">
+            <h3 style="color: var(--primary-color);">{{ oferta.titulo }}</h3>
+            <p><strong>Empresa:</strong> {{ oferta.empresa.nombre_empresa }}</p>
+            <p><strong>Ubicación:</strong> {{ oferta.ciudad|default:"No especificada" }}</p>
+            <p><strong>Salario:</strong>
+                {% if oferta.salario_min %}
+                ${{ oferta.salario_min }}{% if oferta.salario_max %} - ${{ oferta.salario_max }}{% endif %}
+                {% else %}
+                A convenir
+                {% endif %}
+            </p>
+            <hr>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge badge-info">{{ oferta.get_tipo_contrato_display }}</span>
+                <a href="{% url 'jobs:detallar_oferta' oferta.id %}" class="btn btn-primary"
+                    style="text-decoration: none;">Ver Detalles</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="card" style="grid-column: 1 / -1; text-align: center;">
+            <p>No hay ofertas publicadas en este momento. ¡Vuelve pronto!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

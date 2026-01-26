@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="fade-in-up">
+    <a href="{% url 'jobs:dashboard_empresa' %}" class="btn btn-secondary mb-2" style="text-decoration: none;">← Volver
+        al Panel</a>
+
+    <div class="card">
+        <h2>Postulantes para: <span style="color: var(--secondary-color);">{{ oferta.titulo }}</span></h2>
+        <p>Gestiona los candidatos que han aplicado a esta vacante.</p>
+
+        <table class="table mt-2">
+            <thead>
+                <tr>
+                    <th>Candidato</th>
+                    <th>Identificación</th>
+                    <th>Título</th>
+                    <th>Fecha Postulación</th>
+                    <th>Estado Actual</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for postulacion in postulaciones %}
+                <tr>
+                    <td><strong>{{ postulacion.candidato.nombre_completo }}</strong></td>
+                    <td>{{ postulacion.candidato.numero_identificacion|default:"-" }}</td>
+                    <td>{{ postulacion.candidato.titulo_profesional|default:"-" }}</td>
+                    <td>{{ postulacion.fecha_postulacion|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if postulacion.estado == 'pendiente' %}badge-warning
+                            {% elif postulacion.estado == 'entrevista' %}badge-info
+                            {% elif postulacion.estado == 'oferta' or postulacion.estado == 'contratado' %}badge-success
+                            {% elif postulacion.estado == 'rechazado' %}badge-danger
+                            {% else %}badge-secondary{% endif %}">
+                            {{ postulacion.get_estado_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <form action="{% url 'jobs:cambiar_estado_postulacion' postulacion.id %}" method="POST"
+                            style="display: inline-flex; gap: 5px;">
+                            {% csrf_token %}
+                            <select name="estado" class="form-control" style="width: auto; padding: 2px;">
+                                <option value="pendiente" {% if postulacion.estado=='pendiente' %}selected{% endif %}>
+                                    Pendiente</option>
+                                <option value="entrevista" {% if postulacion.estado=='entrevista' %}selected{% endif %}>
+                                    Entrevista</option>
+                                <option value="rechazado" {% if postulacion.estado=='rechazado' %}selected{% endif %}>
+                                    Rechazar</option>
+                                <option value="contratado" {% if postulacion.estado=='contratado' %}selected{% endif %}>
+                                    Contratar</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary" style="padding: 2px 10px;">Actualizar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 20px;">No hay candidatos postulados todavía.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
