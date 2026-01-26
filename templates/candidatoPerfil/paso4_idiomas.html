@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary-blue: #2563eb;
+        --success-green: #10b981;
+        --text-dark: #0f172a;
+        --bg-soft: #f1f5f9;
+    }
+
+    body {
+        background-color: var(--bg-soft);
+        font-family: 'Inter', sans-serif;
+    }
+
+    .wizard-card {
+        background: #ffffff;
+        border-radius: 24px;
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .step-pill {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 8px 16px;
+        border-radius: 50px;
+        text-transform: uppercase;
+    }
+
+    .bg-done {
+        background-color: var(--success-green) !important;
+        color: white;
+    }
+
+    .bg-active {
+        background-color: var(--primary-blue) !important;
+        color: white;
+    }
+
+    .bg-pending {
+        background-color: #fff !important;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modern-form label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.6rem;
+    }
+
+    .modern-form .form-control,
+    .modern-form .form-select {
+        padding: 0.8rem 1.2rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-main {
+        background-color: var(--primary-blue);
+        border: none;
+        padding: 12px 35px;
+        border-radius: 50px;
+        font-weight: 700;
+        color: white;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+
+            <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
+                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Datos</span>
+                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Experiencia</span>
+                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Habilidades</span>
+                <span class="step-pill bg-active shadow-sm">4. Idiomas</span>
+                <span class="step-pill bg-pending shadow-sm">5. Archivos</span>
+            </div>
+
+            <div class="card wizard-card overflow-hidden">
+                <div style="height: 8px; background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
+
+                <div class="card-body p-4 p-md-5">
+                    <header class="text-center mb-5">
+                        <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                            style="width: 60px; height: 60px;">
+                            <i class="fas fa-globe-americas fs-3"></i>
+                        </div>
+                        <h2 class="fw-bold text-dark mb-1">Idiomas y Lenguas</h2>
+                        <p class="text-secondary">¿Cuántos idiomas dominas?</p>
+                    </header>
+
+                    <form method="post" class="modern-form">
+                        {% csrf_token %}
+
+                        <!-- PREGUNTA INICIAL -->
+                        <div class="text-center mb-4 p-4 bg-light rounded-3">
+                            <h5 class="fw-bold mb-3">¿Habla otros idiomas además de su lengua materna?</h5>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="tiene_idiomas" id="id_si" value="si"
+                                    checked>
+                                <label class="btn btn-outline-primary rounded-pill px-4 me-2" for="id_si">
+                                    <i class="fas fa-plus-circle me-1"></i> Sí, agregar
+                                </label>
+
+                                <input type="radio" class="btn-check" name="tiene_idiomas" id="id_no" value="no">
+                                <label class="btn btn-outline-secondary rounded-pill px-4" for="id_no">
+                                    <i class="fas fa-share me-1"></i> No por ahora
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="idiomaFields">
+                            <div class="row g-3">
+                                <div class="col-md-7">
+                                    <label>Nombre del Idioma *</label>
+                                    {{ form.nombre_idioma }}
+                                </div>
+                                <div class="col-md-5">
+                                    <label>Nivel de Dominio *</label>
+                                    {{ form.nivel }}
+                                </div>
+                            </div>
+
+                            {% if idiomas %}
+                            <div class="mt-4">
+                                <h6 class="fw-bold"><i class="fas fa-list-ul me-2"></i> Idiomas ya registrados:</h6>
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    {% for item in idiomas %}
+                                    <span class="badge bg-secondary p-2 rounded-pill">
+                                        {{ item.idioma.nombre }} - {{ item.nivel }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                            <a href="{% url 'wizard_perfil' paso=3 %}"
+                                class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
+                                <i class="fas fa-arrow-left me-2"></i> Volver
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-main" id="submitBtn">
+                                Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const radioNo = document.getElementById('id_no');
+        const radioSi = document.getElementById('id_si');
+        const fields = document.getElementById('idiomaFields');
+        const btn = document.getElementById('submitBtn');
+        const inputs = fields.querySelectorAll('input, select');
+
+        function toggle() {
+            if (radioNo.checked) {
+                fields.style.display = 'none';
+                btn.innerHTML = 'Saltar e ir a Archivos <i class="fas fa-forward ms-2"></i>';
+                // Disable required validation when skipping
+                inputs.forEach(input => {
+                    input.removeAttribute('required');
+                });
+            } else {
+                fields.style.display = 'block';
+                btn.innerHTML = 'Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>';
+                // Re-enable required validation
+                inputs.forEach(input => {
+                    if (input.name !== 'nivel') { // nivel is in a select, handle separately
+                        input.setAttribute('required', 'required');
+                    }
+                });
+            }
+        }
+
+        radioSi.addEventListener('change', toggle);
+        radioNo.addEventListener('change', toggle);
+        toggle();
+    });
+</script>
+{% endblock %}

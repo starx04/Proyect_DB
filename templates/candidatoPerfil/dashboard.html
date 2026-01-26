@@ -227,9 +227,14 @@
             <h1>Hola, {{ candidato.nombre_completo|default:user.username }} 👋</h1>
             <p>{{ candidato.titulo_profesional|default:"Gestiona tu carrera profesional desde aquí." }}</p>
         </div>
-        <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-primary">
-            <i class="fas fa-pen me-2"></i> Editar Perfil
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-success">
+                <i class="fas fa-briefcase me-2"></i> Postular a Ofertas Laborales
+            </a>
+            <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-primary">
+                <i class="fas fa-pen me-2"></i> Editar Perfil
+            </a>
+        </div>
     </div>
 
     <!-- Stats Grid -->
@@ -267,7 +272,8 @@
             <div class="card-section">
                 <div class="card-header">
                     <div class="card-title"><i class="fas fa-history text-primary"></i> Postulaciones Recientes</div>
-                    <a href="{% url 'jobs:mis_postulaciones' %}" class="btn btn-sm btn-link text-decoration-none">Ver todas</a>
+                    <a href="{% url 'jobs:mis_postulaciones' %}" class="btn btn-sm btn-link text-decoration-none">Ver
+                        todas</a>
                 </div>
                 <div class="activity-list">
                     {% for postulacion in postulaciones %}
@@ -296,6 +302,9 @@
             <div class="card-section">
                 <div class="card-header">
                     <div class="card-title"><i class="fas fa-briefcase text-secondary"></i> Experiencia Laboral</div>
+                    <a href="{% url 'wizard_perfil' paso=2 %}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-edit"></i> Gestionar
+                    </a>
                 </div>
                 <div class="activity-list">
                     {% for exp in experiencias %}
@@ -305,7 +314,8 @@
                             <div class="company">{{ exp.empresa }}</div>
                         </div>
                         <div class="text-secondary small">
-                            {{ exp.fecha_inicio|date:"Y" }} - {% if exp.trabajo_actual %}Presente{% else %}{{ exp.fecha_fin|date:"Y" }}{% endif %}
+                            {{ exp.fecha_inicio|date:"Y" }} - {% if exp.trabajo_actual %}Presente{% else %}{{
+                            exp.fecha_fin|date:"Y" }}{% endif %}
                         </div>
                     </div>
                     {% empty %}
@@ -323,6 +333,9 @@
             <div class="card-section">
                 <div class="card-header">
                     <div class="card-title"><i class="fas fa-bolt text-warning"></i> Habilidades</div>
+                    <a href="{% url 'wizard_perfil' paso=3 %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit"></i> Gestionar
+                    </a>
                 </div>
                 <div class="tags-container">
                     {% for hab in habilidades %}
@@ -337,6 +350,9 @@
             <div class="card-section">
                 <div class="card-header">
                     <div class="card-title"><i class="fas fa-globe text-info"></i> Idiomas</div>
+                    <a href="{% url 'wizard_perfil' paso=4 %}" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-edit"></i> Gestionar
+                    </a>
                 </div>
                 <div class="tags-container">
                     {% for idioma in idiomas %}
@@ -351,6 +367,9 @@
             <div class="card-section">
                 <div class="card-header">
                     <div class="card-title"><i class="fas fa-file-pdf text-danger"></i> CV & Documentos</div>
+                    <a href="{% url 'wizard_perfil' paso=5 %}" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-upload"></i> Subir CV
+                    </a>
                 </div>
                 <div class="p-3">
                     {% for doc in candidato.documento.all %}

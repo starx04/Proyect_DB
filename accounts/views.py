@@ -100,8 +100,8 @@ def dashboard_candidato(request):
 
 @login_required
 def wizard_perfil(request, paso=1):
-    from .models import Habilidad, CandidatoHabilidad, Documento
-    from .forms import HabilidadForm # Import needed forms
+    from .models import Habilidad, CandidatoHabilidad, Documento, Idioma, CandidatoIdioma
+    from .forms import HabilidadForm, IdiomaForm # Import needed forms
 
     # 1. Obtener el candidato
     try:
@@ -123,16 +123,20 @@ def wizard_perfil(request, paso=1):
         template = 'candidatoPerfil/paso2_experiencia.html'
         
     elif paso == 3:
-        # Habilidades (Nuevo paso)
+        # Habilidades
         form = HabilidadForm()
         template = 'candidatoPerfil/paso3_habilidades.html'
 
     elif paso == 4:
-        # Archivos (Antes Paso 3)
-        # Buscamos el último CV para editarlo si existe
+        # Idiomas (Nuevo paso)
+        form = IdiomaForm()
+        template = 'candidatoPerfil/paso4_idiomas.html'
+
+    elif paso == 5:
+        # Archivos (Antes Paso 4)
         documento = candidato.documento.filter(tipo_documento="CV").last()
         form = DocumentoForm(instance=documento)
-        template = 'candidatoPerfil/paso4_archivos.html' # Changed name
+        template = 'candidatoPerfil/paso5_archivos.html'
     else:
         return redirect('dashboard_candidato')
 
@@ -145,6 +149,8 @@ def wizard_perfil(request, paso=1):
         elif paso == 3:
             form = HabilidadForm(request.POST)
         elif paso == 4:
+            form = IdiomaForm(request.POST)
+        elif paso == 5:
             documento = candidato.documento.filter(tipo_documento="CV").last()
             form = DocumentoForm(request.POST, request.FILES, instance=documento)
 
@@ -157,9 +163,10 @@ def wizard_perfil(request, paso=1):
         if paso == 3 and request.POST.get('tiene_habilidades') == 'no':
              return redirect('wizard_perfil', paso=4)
 
-        if paso == 4 and request.POST.get('tiene_cv') == 'no':
-             # Si dice que no tiene CV, pero ya existía uno, ¿lo borramos? O solo terminamos
-             # Por ahora, terminamos
+        if paso == 4 and request.POST.get('tiene_idiomas') == 'no':
+             return redirect('wizard_perfil', paso=5)
+
+        if paso == 5 and request.POST.get('tiene_cv') == 'no':
              messages.info(request, "Registro finalizado.")
              return redirect('dashboard_candidato')
 
@@ -188,8 +195,21 @@ def wizard_perfil(request, paso=1):
                 
                 return redirect('wizard_perfil', paso=4)
 
-            # GUARDADO PASO 4 (ARCHIVOS)
+            # GUARDADO PASO 4 (IDIOMAS)
             if paso == 4:
+                nombre = form.cleaned_data['nombre_idioma']
+                idioma_obj, created = Idioma.objects.get_or_create(nombre__iexact=nombre, defaults={'nombre': nombre})
+                
+                if not CandidatoIdioma.objects.filter(candidato=candidato, idioma=idioma_obj).exists():
+                    candi_idioma = form.save(commit=False)
+                    candi_idioma.candidato = candidato
+                    candi_idioma.idioma = idioma_obj
+                    candi_idioma.save()
+                
+                return redirect('wizard_perfil', paso=5)
+
+            # GUARDADO PASO 5 (ARCHIVOS)
+            if paso == 5:
                 obj = form.save(commit=False)
                 obj.candidato = candidato
                 obj.tipo_documento = "CV"
@@ -219,7 +239,8 @@ def wizard_perfil(request, paso=1):
     
     # Datos extra para visualización
     if paso == 2: context['experiencias'] = candidato.experiencia_laboral.all()
-    if paso == 3: context['habilidades'] = candidato.habilidades.all() # Mostrar las que va agregando
+    if paso == 3: context['habilidades'] = candidato.habilidades.all()
+    if paso == 4: context['idiomas'] = candidato.idiomas.all()
     
     return render(request, template, context)
 

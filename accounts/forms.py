@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import FileExtensionValidator
-from .models import Usuario, Candidato, ExperienciaLaboral, Documento, CandidatoHabilidad
+from .models import Usuario, Candidato, ExperienciaLaboral, Documento, CandidatoHabilidad, CandidatoIdioma, Idioma
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -136,3 +136,25 @@ class DocumentoForm(forms.ModelForm):
         super(DocumentoForm, self).__init__(*args, **kwargs)
         self.fields['nombre_archivo'].required = False
         self.fields['url_archivo'].required = False
+
+class IdiomaForm(forms.ModelForm):
+    nombre_idioma = forms.CharField(
+        max_length=100, 
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Inglés, Francés, Alemán'})
+    )
+
+    class Meta:
+        model = CandidatoIdioma
+        fields = ['nivel']
+        widgets = {
+            'nivel': forms.Select(attrs={'class': 'form-select'}, choices=[
+                ('A1', 'A1 - Acceso'),
+                ('A2', 'A2 - Plataforma'),
+                ('B1', 'B1 - Umbral'),
+                ('B2', 'B2 - Avanzado'),
+                ('C1', 'C1 - Dominio eficaz'),
+                ('C2', 'C2 - Competencia técnica'),
+                ('nativo', 'Lengua Materna / Nativo'),
+            ]),
+        }
