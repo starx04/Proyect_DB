@@ -1,403 +1,378 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
+    /* STANDALONE PREMIUM DASHBOARD STYLES */
     :root {
-        --primary: #2563eb;
-        --secondary: #64748b;
-        --bg-body: #f8fafc;
-        --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        --db-primary: #3b82f6;
+        --db-secondary: #8b5cf6;
+        --db-accent: #10b981;
+        --db-danger: #ef4444;
+        --db-warning: #f59e0b;
+        --db-card-bg: rgba(20, 22, 32, 0.7);
+        --db-border: rgba(255, 255, 255, 0.1);
+        --db-text: #ffffff;
+        --db-text-muted: #a0a0ab;
     }
 
-    body {
-        background-color: var(--bg-body);
-        font-family: 'Inter', sans-serif;
-        color: #1e293b;
-    }
+    /* Ensure body stays dark if base.html has issues */
+    body { background-color: #0a0b10 !important; }
 
-    .dashboard-container {
+    .db-wrapper {
+        color: var(--db-text);
+        font-family: 'Outfit', sans-serif;
         max-width: 1200px;
-        margin: 40px auto;
-        padding: 0 20px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+        background-color: #0a0b10;
     }
 
-    /* Welcome Header */
-    .welcome-header {
+    /* Header */
+    .db-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 32px;
+        margin-bottom: 40px;
+        padding: 20px 0;
     }
 
-    .welcome-text h1 {
-        font-size: 1.8rem;
-        font-weight: 700;
+    .db-profile-info h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
         margin: 0;
-        color: #0f172a;
+        background: linear-gradient(135deg, var(--db-primary), var(--db-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    .welcome-text p {
-        color: var(--secondary);
-        margin: 4px 0 0 0;
+    .db-profile-info p {
+        color: var(--db-text-muted);
+        font-size: 1.1rem;
+        margin: 5px 0 0 0;
+    }
+
+    .db-actions {
+        display: flex;
+        gap: 15px;
     }
 
     /* Stats Grid */
-    .stats-grid {
+    .db-stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-bottom: 50px;
+    }
+
+    .db-stat-card {
+        background: var(--db-card-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--db-border);
+        border-radius: 20px;
+        padding: 30px;
+        display: flex;
+        align-items: center;
         gap: 20px;
-        margin-bottom: 32px;
+        transition: transform 0.3s ease, border-color 0.3s ease;
     }
 
-    .stat-card {
-        background: white;
-        padding: 24px;
-        border-radius: 16px;
-        box-shadow: var(--card-shadow);
-        border: 1px solid #e2e8f0;
+    .db-stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .stat-icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
         display: flex;
         align-items: center;
-        gap: 16px;
-        transition: transform 0.2s;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-2px);
-    }
-
-    .stat-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
         justify-content: center;
-        align-items: center;
-        font-size: 1.25rem;
-    }
-
-    .bg-blue-light {
-        background: #eff6ff;
-        color: #2563eb;
-    }
-
-    .bg-green-light {
-        background: #f0fdf4;
-        color: #16a34a;
-    }
-
-    .bg-purple-light {
-        background: #f5f3ff;
-        color: #7c3aed;
-    }
-
-    .stat-info .value {
         font-size: 1.5rem;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1;
     }
 
-    .stat-info .label {
-        font-size: 0.875rem;
-        color: var(--secondary);
-        margin-top: 4px;
-    }
+    .stat-blue { background: rgba(59, 130, 246, 0.15); color: var(--db-primary); box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+    .stat-green { background: rgba(16, 185, 129, 0.15); color: var(--db-accent); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2); }
+    .stat-purple { background: rgba(139, 92, 246, 0.15); color: var(--db-secondary); box-shadow: 0 0 20px rgba(139, 92, 246, 0.2); }
 
-    /* Main Content Grid */
-    .content-grid {
+    .stat-value { font-size: 1.8rem; font-weight: 800; line-height: 1; }
+    .stat-label { color: var(--db-text-muted); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+
+    /* Main Grid */
+    .db-main-grid {
         display: grid;
         grid-template-columns: 2fr 1fr;
-        gap: 24px;
+        gap: 30px;
     }
 
-    .card-section {
-        background: white;
-        border-radius: 16px;
-        box-shadow: var(--card-shadow);
-        border: 1px solid #e2e8f0;
+    @media (max-width: 992px) {
+        .db-main-grid { grid-template-columns: 1fr; }
+        .db-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+    }
+
+    .db-card {
+        background: var(--db-card-bg);
+        border: 1px solid var(--db-border);
+        border-radius: 24px;
         overflow: hidden;
-        margin-bottom: 24px;
+        margin-bottom: 30px;
     }
 
-    .card-header {
-        padding: 20px 24px;
-        border-bottom: 1px solid #f1f5f9;
+    .db-card-header {
+        padding: 25px 30px;
+        border-bottom: 1px solid var(--db-border);
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    .card-title {
-        font-size: 1rem;
+    .db-card-header h5 {
+        margin: 0;
+        font-size: 1.1rem;
         font-weight: 700;
-        color: #0f172a;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
     }
 
-    /* Activity List */
-    .activity-list {
-        padding: 0;
-    }
-
-    .activity-item {
-        padding: 20px 24px;
-        border-bottom: 1px solid #f1f5f9;
+    /* Lists */
+    .db-list-item {
+        padding: 25px 30px;
+        border-bottom: 1px solid var(--db-border);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        transition: background 0.3s ease;
     }
 
-    .activity-item:last-child {
-        border-bottom: none;
+    .db-list-item:hover {
+        background: rgba(255, 255, 255, 0.02);
     }
 
-    .job-info h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0 0 4px 0;
-    }
+    .db-list-item:last-child { border-bottom: none; }
 
-    .job-info .company {
-        color: var(--secondary);
-        font-size: 0.875rem;
-    }
+    .job-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; color: var(--db-text); }
+    .company-info { color: var(--db-text-muted); font-size: 0.95rem; }
 
-    .status-badge {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
+    /* Badge Styles */
+    .db-status-badge {
+        padding: 6px 16px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 700;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .status-pendiente {
-        background: #fff7ed;
-        color: #c2410c;
-    }
+    .st-pendiente { background: rgba(245, 158, 11, 0.1); color: var(--db-warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .st-visto { background: rgba(59, 130, 246, 0.1); color: var(--db-primary); border: 1px solid rgba(59, 130, 246, 0.2); }
+    .st-entrevista { background: rgba(16, 185, 129, 0.1); color: var(--db-accent); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .st-rechazado { background: rgba(239, 68, 68, 0.1); color: var(--db-danger); border: 1px solid rgba(239, 68, 68, 0.2); }
 
-    .status-visto {
-        background: #eff6ff;
-        color: #2563eb;
-    }
-
-    .status-entrevista {
-        background: #f0fdf4;
-        color: #16a34a;
-    }
-
-    .status-rechazado {
-        background: #fef2f2;
-        color: #dc2626;
-    }
-
-    /* Tags */
-    .tags-container {
-        padding: 20px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .skill-tag {
-        background: #f1f5f9;
-        color: #475569;
-        padding: 4px 10px;
-        border-radius: 6px;
+    /* Sidebar Components */
+    .db-panel { padding: 30px; }
+    .db-tag-container { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    
+    .db-tag {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--db-text);
+        padding: 8px 15px;
+        border-radius: 12px;
         font-size: 0.85rem;
         font-weight: 500;
+        border: 1px solid var(--db-border);
     }
 
-    @media (max-width: 900px) {
-        .content-grid {
-            grid-template-columns: 1fr;
-        }
+    .doc-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--db-border);
+        border-radius: 16px;
+        padding: 15px;
+        margin-bottom: 12px;
     }
+
+    .doc-info { flex-grow: 1; overflow: hidden; }
+    .doc-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 2px; }
+    .doc-meta { color: var(--db-text-muted); font-size: 0.75rem; }
+
+    .btn-download {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--db-primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+    }
+
+    /* Empty States */
+    .empty-state {
+        text-align: center;
+        padding: 60px 40px;
+        color: var(--db-text-muted);
+    }
+
+    .empty-icon { font-size: 3rem; margin-bottom: 20px; opacity: 0.2; }
+
+    /* Utility */
+    .text-gradient { background: linear-gradient(135deg, var(--db-primary), var(--db-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 </style>
 
-<div class="dashboard-container">
-
-    <!-- Welcome Header -->
-    <div class="welcome-header">
-        <div class="welcome-text">
+<div class="db-wrapper fade-in-up">
+    <!-- Header Section -->
+    <header class="db-header">
+        <div class="db-profile-info">
             <h1>Hola, {{ candidato.nombre_completo|default:user.username }} 👋</h1>
             <p>{{ candidato.titulo_profesional|default:"Gestiona tu carrera profesional desde aquí." }}</p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-success">
-                <i class="fas fa-briefcase me-2"></i> Postular a Ofertas Laborales
+        <div class="db-actions">
+            <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-primary">
+                <i class="fas fa-briefcase"></i> Explorar Ofertas
             </a>
-            <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-primary">
-                <i class="fas fa-pen me-2"></i> Editar Perfil
+            <a href="{% url 'wizard_perfil' paso=1 %}" class="btn btn-secondary">
+                <i class="fas fa-user-edit"></i> Mi Perfil
             </a>
+        </div>
+    </header>
+
+    <!-- Statistics Strip -->
+    <div class="db-stats-grid">
+        <div class="db-stat-card">
+            <div class="stat-icon-wrapper stat-blue"><i class="fas fa-paper-plane"></i></div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats.postulaciones_activas }}</div>
+                <div class="stat-label">Postulaciones</div>
+            </div>
+        </div>
+        <div class="db-stat-card">
+            <div class="stat-icon-wrapper stat-green"><i class="fas fa-calendar-check"></i></div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats.entrevistas }}</div>
+                <div class="stat-label">Entrevistas</div>
+            </div>
+        </div>
+        <div class="db-stat-card">
+            <div class="stat-icon-wrapper stat-purple"><i class="fas fa-star"></i></div>
+            <div class="stat-content">
+                <div class="stat-value">{{ stats.guardadas }}</div>
+                <div class="stat-label">Guardadas</div>
+            </div>
         </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon bg-blue-light"><i class="fas fa-paper-plane"></i></div>
-            <div class="stat-info">
-                <div class="value">{{ stats.postulaciones_activas }}</div>
-                <div class="label">Postulaciones Activas</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon bg-green-light"><i class="fas fa-user-clock"></i></div>
-            <div class="stat-info">
-                <div class="value">{{ stats.entrevistas }}</div>
-                <div class="label">Entrevistas</div>
-            </div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon bg-purple-light"><i class="fas fa-bookmark"></i></div>
-            <div class="stat-info">
-                <div class="value">{{ stats.guardadas }}</div>
-                <div class="label">Ofertas Guardadas</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="content-grid">
-
-        <!-- Left Column -->
-        <div class="left-col">
-
-            <!-- Recent Applications -->
-            <div class="card-section">
-                <div class="card-header">
-                    <div class="card-title"><i class="fas fa-history text-primary"></i> Postulaciones Recientes</div>
-                    <a href="{% url 'jobs:mis_postulaciones' %}" class="btn btn-sm btn-link text-decoration-none">Ver
-                        todas</a>
+    <!-- Main Content Layout -->
+    <div class="db-main-grid">
+        
+        <!-- Applications History -->
+        <div class="db-left">
+            <div class="db-card">
+                <div class="db-card-header">
+                    <h5><i class="fas fa-history text-gradient"></i> Postulaciones Recientes</h5>
+                    <a href="{% url 'jobs:mis_postulaciones' %}" style="font-size: 0.85rem; font-weight: 500;">Ver historial completo</a>
                 </div>
-                <div class="activity-list">
+                <div class="db-list">
                     {% for postulacion in postulaciones %}
-                    <div class="activity-item">
-                        <div class="job-info">
-                            <h3>{{ postulacion.oferta.titulo }}</h3>
-                            <div class="company"><i class="far fa-building me-1"></i> {{
-                                postulacion.oferta.empresa.nombre_empresa }}</div>
+                    <div class="db-list-item">
+                        <div class="job-meta">
+                            <div class="job-title">{{ postulacion.oferta.titulo }}</div>
+                            <div class="company-info"><i class="far fa-building me-1"></i> {{ postulacion.oferta.empresa.nombre_empresa }}</div>
                             {% if postulacion.feedback_empresa %}
-                            <div class="mt-2 p-2 rounded" style="background: #e3f2fd; border-left: 3px solid #2196f3;">
-                                <small class="text-primary">
-                                    <i class="fas fa-bell"></i> <strong>Nueva notificación</strong>
-                                </small>
+                            <div style="margin-top: 10px; font-size: 0.8rem; color: var(--db-primary); font-weight: 600;">
+                                <i class="fas fa-comment-dots"></i> Empresa envió un mensaje
                             </div>
                             {% endif %}
                         </div>
-                        <div class="d-flex flex-column align-items-end">
-                            <span class="status-badge status-{{ postulacion.estado }}">{{ postulacion.get_estado_display
-                                }}</span>
-                            <small class="text-muted mt-1" style="font-size: 0.75rem;">{{
-                                postulacion.fecha_postulacion|timesince }}</small>
+                        <div style="text-align: right;">
+                            <span class="db-status-badge st-{{ postulacion.estado }}">{{ postulacion.get_estado_display }}</span>
+                            <div style="color: var(--db-text-muted); font-size: 0.8rem; margin-top: 8px;">{{ postulacion.fecha_postulacion|timesince }}</div>
                         </div>
                     </div>
                     {% empty %}
-                    <div class="p-4 text-center text-muted">
-                        No has realizado ninguna postulación aún.
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-search"></i></div>
+                        <p>Aún no has postulado a ninguna oferta.<br>¡Comienza tu búsqueda hoy!</p>
+                        <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-primary" style="margin-top: 20px;">Buscar Empleos</a>
                     </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Experience -->
-            <div class="card-section">
-                <div class="card-header">
-                    <div class="card-title"><i class="fas fa-briefcase text-secondary"></i> Experiencia Laboral</div>
-                    <a href="{% url 'wizard_perfil' paso=2 %}" class="btn btn-sm btn-outline-secondary">
-                        <i class="fas fa-edit"></i> Gestionar
-                    </a>
+            <div class="db-card">
+                <div class="db-card-header">
+                    <h5><i class="fas fa-user-graduate text-gradient"></i> Última Experiencia</h5>
+                    <a href="{% url 'wizard_perfil' paso=2 %}" class="btn btn-secondary btn-sm">Editar</a>
                 </div>
-                <div class="activity-list">
-                    {% for exp in experiencias %}
-                    <div class="activity-item">
-                        <div class="job-info">
-                            <h3>{{ exp.cargo }}</h3>
-                            <div class="company">{{ exp.empresa }}</div>
+                <div class="db-list">
+                    {% for exp in experiencias|slice:":2" %}
+                    <div class="db-list-item">
+                        <div>
+                            <div class="job-title">{{ exp.cargo }}</div>
+                            <div class="company-info">{{ exp.empresa }}</div>
                         </div>
-                        <div class="text-secondary small">
-                            {{ exp.fecha_inicio|date:"Y" }} - {% if exp.trabajo_actual %}Presente{% else %}{{
-                            exp.fecha_fin|date:"Y" }}{% endif %}
+                        <div style="font-weight: 600; font-size: 0.9rem; color: var(--db-text-muted);">
+                            {{ exp.fecha_inicio|date:"Y" }} - {% if exp.trabajo_actual %}Actual{% else %}{{ exp.fecha_fin|date:"Y" }}{% endif %}
                         </div>
                     </div>
                     {% empty %}
-                    <div class="p-4 text-center text-muted">No has registrado experiencia laboral.</div>
+                    <div class="empty-state" style="padding: 30px;">
+                        <p style="margin: 0;">No has completado tu historial laboral.</p>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
-
         </div>
 
-        <!-- Right Column -->
-        <div class="right-col">
-
-            <!-- Skills -->
-            <div class="card-section">
-                <div class="card-header">
-                    <div class="card-title"><i class="fas fa-bolt text-warning"></i> Habilidades</div>
-                    <a href="{% url 'wizard_perfil' paso=3 %}" class="btn btn-sm btn-outline-primary">
-                        <i class="fas fa-edit"></i> Gestionar
-                    </a>
+        <!-- Sidebar Components -->
+        <div class="db-right">
+            
+            <!-- Skills Panel -->
+            <div class="db-card db-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h6 style="margin:0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">Habilidades</h6>
+                    <a href="{% url 'wizard_perfil' paso=3 %}" style="color: var(--db-primary); font-size: 0.9rem;"><i class="fas fa-plus"></i></a>
                 </div>
-                <div class="tags-container">
+                <div class="db-tag-container">
                     {% for hab in habilidades %}
-                    <span class="skill-tag">{{ hab.habilidad.nombre }} ({{ hab.get_nivel_display }})</span>
+                    <span class="db-tag">{{ hab.habilidad.nombre }}</span>
                     {% empty %}
-                    <span class="text-muted small">Sin habilidades registradas</span>
+                    <span style="color: var(--db-text-muted); font-size: 0.85rem; width: 100%; text-align: center;">Sin habilidades</span>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- Languages -->
-            <div class="card-section">
-                <div class="card-header">
-                    <div class="card-title"><i class="fas fa-globe text-info"></i> Idiomas</div>
-                    <a href="{% url 'wizard_perfil' paso=4 %}" class="btn btn-sm btn-outline-info">
-                        <i class="fas fa-edit"></i> Gestionar
-                    </a>
-                </div>
-                <div class="tags-container">
-                    {% for idioma in idiomas %}
-                    <span class="skill-tag">{{ idioma.idioma.nombre }} - {{ idioma.nivel }}</span>
-                    {% empty %}
-                    <span class="text-muted small">Sin idiomas registrados</span>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Documents -->
-            <div class="card-section">
-                <div class="card-header">
-                    <div class="card-title"><i class="fas fa-file-pdf text-danger"></i> CV & Documentos</div>
-                    <a href="{% url 'wizard_perfil' paso=5 %}" class="btn btn-sm btn-outline-danger">
-                        <i class="fas fa-upload"></i> Subir CV
-                    </a>
-                </div>
-                <div class="p-3">
+            <!-- Documents Panel -->
+            <div class="db-card db-panel">
+                <h6 style="margin:0 0 20px 0; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem;">CV & Documentos</h6>
+                <div class="db-docs">
                     {% for doc in candidato.documento.all %}
-                    <div class="d-flex align-items-center bg-light p-2 rounded mb-2">
-                        <i class="fas fa-file-pdf text-danger me-2"></i>
-                        <div class="text-truncate flex-grow-1 small fw-bold">{{ doc.nombre_archivo }}</div>
-                        <a href="{{ doc.url_archivo.url }}" class="text-primary" target="_blank"><i
-                                class="fas fa-download"></i></a>
+                    <div class="doc-item">
+                        <div style="font-size: 1.5rem; color: var(--db-danger);"><i class="fas fa-file-pdf"></i></div>
+                        <div class="doc-info">
+                            <div class="doc-name text-truncate">{{ doc.nombre_archivo }}</div>
+                            <div class="doc-meta">Curriculum Vitae</div>
+                        </div>
+                        <a href="{{ doc.url_archivo.url }}" class="btn-download" target="_blank">
+                            <i class="fas fa-arrow-down"></i>
+                        </a>
                     </div>
                     {% empty %}
-                    <div class="text-center mb-2">
-                        <small class="text-muted">No has subido tu CV</small>
+                    <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                        <p style="font-size: 0.85rem; color: var(--db-text-muted); margin: 0;">No has subido tu CV</p>
                     </div>
                     {% endfor %}
-                    <a href="{% url 'wizard_perfil' paso=3 %}"
-                        class="btn btn-outline-primary btn-sm w-100 mt-2">Gestionar Documentos</a>
+                    <a href="{% url 'wizard_perfil' paso=5 %}" class="btn btn-secondary w-100" style="margin-top: 20px; font-size: 0.85rem;">
+                        Gestionar Archivos
+                    </a>
                 </div>
             </div>
 
         </div>
-
     </div>
 </div>
 {% endblock %}

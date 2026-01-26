@@ -1,62 +1,240 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="fade-in-up">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Mis Postulaciones 📑</h1>
-        <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-outline-primary">Explorar más ofertas</a>
-    </div>
+{% block title %}Mis Postulaciones | JobBoard{% endblock %}
 
-    <div class="card p-0 overflow-hidden">
-        <table class="table mb-0">
-            <thead class="bg-light">
-                <tr>
-                    <th>Oferta de Empleo</th>
-                    <th>Empresa</th>
-                    <th>Fecha de Aplicación</th>
-                    <th>Estado de la Solicitud</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for postulacion in postulaciones %}
-                <tr>
-                    <td><strong>{{ postulacion.oferta.titulo }}</strong></td>
-                    <td>{{ postulacion.oferta.empresa.nombre_empresa }}</td>
-                    <td>{{ postulacion.fecha_postulacion|date:"d/m/Y H:i" }}</td>
-                    <td>
-                        <span class="badge 
-                            {% if postulacion.estado == 'pendiente' %}badge-warning
-                            {% elif postulacion.estado == 'entrevista' %}badge-info
-                            {% elif postulacion.estado == 'contratado' %}badge-success
-                            {% elif postulacion.estado == 'rechazado' %}badge-danger
-                            {% else %}badge-secondary{% endif %}">
-                            {{ postulacion.get_estado_display }}
-                        </span>
-                        {% if postulacion.feedback_empresa %}
-                        <div class="mt-2 p-2 bg-light rounded small">
-                            <i class="fas fa-envelope-open-text text-primary"></i>
-                            <strong>Mensaje de la empresa:</strong><br>
-                            {{ postulacion.feedback_empresa }}
-                        </div>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        <a href="{% url 'jobs:detallar_oferta' postulacion.oferta.id %}"
-                            class="btn btn-sm btn-outline-info">Ver Oferta</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center p-5 text-muted">
-                        No has realizado ninguna postulación todavía. <br>
-                        <a href="{% url 'jobs:lista_ofertas' %}" class="mt-2 d-inline-block">¡Empieza a buscar empleo
-                            aquí!</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% block content %}
+<style>
+    /* STANDALONE PREMIUM PANEL STYLES */
+    :root {
+        --db-primary: #3b82f6;
+        --db-secondary: #8b5cf6;
+        --db-accent: #10b981;
+        --db-danger: #ef4444;
+        --db-warning: #f59e0b;
+        --db-card-bg: rgba(20, 22, 32, 0.7);
+        --db-border: rgba(255, 255, 255, 0.1);
+        --db-text: #ffffff;
+        --db-text-muted: #a0a0ab;
+    }
+
+    .db-wrapper {
+        color: var(--db-text);
+        font-family: 'Outfit', sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+    }
+
+    /* Header */
+    .db-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding: 20px 0;
+    }
+
+    .db-title h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0;
+        background: linear-gradient(135deg, var(--db-primary), var(--db-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .db-title p {
+        color: var(--db-text-muted);
+        font-size: 1rem;
+        margin: 5px 0 0 0;
+    }
+
+    /* Selection Card */
+    .db-card {
+        background: var(--db-card-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--db-border);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Premium Table */
+    .db-table-container {
+        padding: 20px;
+        overflow-x: auto;
+    }
+
+    .db-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .db-table th {
+        padding: 15px 20px;
+        color: var(--db-text-muted);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: left;
+    }
+
+    .db-table tr td {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 25px 20px;
+        border-top: 1px solid var(--db-border);
+        border-bottom: 1px solid var(--db-border);
+        transition: all 0.3s ease;
+    }
+
+    .db-table tr td:first-child {
+        border-left: 1px solid var(--db-border);
+        border-radius: 16px 0 0 16px;
+    }
+
+    .db-table tr td:last-child {
+        border-right: 1px solid var(--db-border);
+        border-radius: 0 16px 16px 0;
+    }
+
+    .db-table tr:hover td {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .job-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: var(--db-text);
+        margin-bottom: 5px;
+    }
+
+    .company-tag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--db-text-muted);
+        font-size: 0.95rem;
+    }
+
+    /* Badges */
+    .st-badge {
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid transparent;
+    }
+
+    .st-pendiente { background: rgba(245, 158, 11, 0.1); color: var(--db-warning); border-color: rgba(245, 158, 11, 0.2); }
+    .st-visto { background: rgba(59, 130, 246, 0.1); color: var(--db-primary); border-color: rgba(59, 130, 246, 0.2); }
+    .st-entrevista { background: rgba(16, 185, 129, 0.1); color: var(--db-accent); border-color: rgba(16, 185, 129, 0.2); }
+    .st-rechazado { background: rgba(239, 68, 68, 0.1); color: var(--db-danger); border-color: rgba(239, 68, 68, 0.2); }
+
+    /* Feedback */
+    .feedback-bubble {
+        margin-top: 12px;
+        padding: 12px;
+        background: rgba(59, 130, 246, 0.05);
+        border-radius: 12px;
+        border-left: 3px solid var(--db-primary);
+        font-size: 0.85rem;
+        color: var(--db-text-muted);
+        max-width: 300px;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 100px 40px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--db-text-muted);
+        opacity: 0.2;
+        margin-bottom: 25px;
+    }
+
+    /* Utility */
+    .text-gradient { background: linear-gradient(135deg, var(--db-primary), var(--db-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+</style>
+
+<div class="db-wrapper fade-in-up">
+    <!-- Header -->
+    <header class="db-header">
+        <div class="db-title">
+            <h1>Mis Postulaciones</h1>
+            <p>Sigue el progreso de tu carrera en JobBoard</p>
+        </div>
+        <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-secondary">
+            <i class="fas fa-search me-2"></i> Explorar Más Ofertas
+        </a>
+    </header>
+
+    <!-- Content Card -->
+    <div class="db-card">
+        <div class="db-table-container">
+            {% if postulaciones %}
+            <table class="db-table">
+                <thead>
+                    <tr>
+                        <th>Oferta de Empleo</th>
+                        <th>Fecha</th>
+                        <th>Estado de Aplicación</th>
+                        <th style="text-align: right;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for postulacion in postulaciones %}
+                    <tr>
+                        <td>
+                            <div class="job-title">{{ postulacion.oferta.titulo }}</div>
+                            <div class="company-tag">
+                                <i class="far fa-building"></i> {{ postulacion.oferta.empresa.nombre_empresa }}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 500; font-size: 0.95rem;">{{ postulacion.fecha_postulacion|date:"d M, Y" }}</div>
+                            <div style="color: var(--db-text-muted); font-size: 0.8rem;">{{ postulacion.fecha_postulacion|timesince }}</div>
+                        </td>
+                        <td>
+                            <div class="status-col">
+                                <span class="st-badge st-{{ postulacion.estado }}">
+                                    {{ postulacion.get_estado_display }}
+                                </span>
+                                {% if postulacion.feedback_empresa %}
+                                <div class="feedback-bubble">
+                                    <i class="fas fa-comment-dots text-primary me-2"></i>
+                                    {{ postulacion.feedback_empresa|truncatechars:100 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td style="text-align: right;">
+                            <a href="{% url 'jobs:detallar_oferta' postulacion.oferta.id %}" class="btn btn-secondary btn-sm" style="border-radius: 10px; padding: 10px 20px;">
+                                Detalles
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+                <h3 style="font-weight: 700;">No hay postulaciones</h3>
+                <p style="color: var(--db-text-muted); margin-bottom: 30px;">Parece que aún no has aplicado a ninguna vacante.<br>¡El trabajo de tus sueños te está esperando!</p>
+                <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-primary px-5 py-3" style="border-radius: 12px;">
+                    Comenzar Búsqueda
+                </a>
+            </div>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

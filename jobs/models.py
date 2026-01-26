@@ -26,6 +26,11 @@ class TipoContrato(models.TextChoices):
     TEMPORAL = 'temporal', _('Temporal')
     POR_PROYECTO = 'por_proyecto', _('Por Proyecto')
 
+class Modalidad(models.TextChoices):
+    PRESENCIAL = 'presencial', _('Presencial')
+    REMOTO = 'remoto', _('Remoto')
+    HIBRIDO = 'hibrido', _('Híbrido')
+
 class EstadoOferta(models.TextChoices):
     BORRADOR = 'borrador', _('Borrador')
     PUBLICADA = 'publicada', _('Publicada')
@@ -70,7 +75,7 @@ class OfertaEmpleo(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
     tipo_contrato = models.CharField(max_length=50, choices=TipoContrato.choices, default=TipoContrato.TIEMPO_COMPLETO)
-    modalidad = models.CharField(max_length=100, blank=True, null=True, help_text="Presencial, Remoto, Híbrido")
+    modalidad = models.CharField(max_length=50, choices=Modalidad.choices, default=Modalidad.PRESENCIAL)
     salario_min = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     salario_max = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
     fecha_publicacion = models.DateTimeField(default=timezone.now)

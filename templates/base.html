@@ -1,67 +1,89 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}JobBoard Pastel{% endblock %}</title>
-    
-    <!-- Google Fonts: Inter -->
+    <title>{% block title %}JobBoard | Premium Recruitment{% endblock %}</title>
+
+    <!-- Google Fonts: Outfit & Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    
+
     {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
     <nav class="navbar">
         <div class="container nav-content">
-            <a href="/" class="nav-brand"><i class="fas fa-briefcase"></i> JobBoard</a>
-            
+            <a href="/" class="nav-brand">
+                <i class="fas fa-rocket"></i> JobBoard
+            </a>
+
             <ul class="nav-links">
                 {% if user.is_authenticated %}
-                    <li><a href="#">Hola, {{ user.username }}</a></li>
-                    {% if user.is_staff or user.is_superuser %}
-                        <li><a href="{% url 'admin_locations' %}">Admin Ubicaciones</a></li>
-                    {% endif %}
-                    <li>
-                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" style="background:none; border:none; cursor:pointer; color:inherit; font:inherit;">Salir</button>
-                        </form>
-                    </li>
+                <li><a href="/" class="{% if request.path == '/' %}active{% endif %}">Inicio</a></li>
+                {% if user.is_staff or user.is_superuser %}
+                <li><a href="{% url 'admin_locations' %}">Ubicaciones</a></li>
+                {% endif %}
+
+                <li style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="color: var(--text-secondary); font-size: 0.9rem;">
+                        <i class="far fa-user-circle"></i> {{ user.username }}
+                    </span>
+                    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary"
+                            style="padding: 0.4rem 1rem; font-size: 0.85rem;">
+                            <i class="fas fa-sign-out-alt"></i> Salir
+                        </button>
+                    </form>
+                </li>
                 {% else %}
-                    <li><a href="{% url 'login' %}">Ingresar</a></li>
-                    <li><a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a></li>
+                <li><a href="{% url 'login' %}">Ingresar</a></li>
+                <li><a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a></li>
                 {% endif %}
             </ul>
         </div>
     </nav>
 
-    <main class="container fade-in">
+    <main class="container fade-in-up" style="padding-top: 2rem; padding-bottom: 4rem;">
         {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="card" style="padding: 1rem; border-left: 4px solid var(--primary-color);">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+        <div class="messages" style="margin-bottom: 2.5rem;">
+            {% for message in messages %}
+            <div
+                style="padding: 1.2rem; border-left: 4px solid var(--primary-glow); background: rgba(59, 130, 246, 0.15); border-radius: 12px; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 1rem; margin-bottom: 0.8rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <i class="fas fa-info-circle" style="color: var(--primary-glow); font-size: 1.2rem;"></i>
+                <span style="color: #ffffff; font-weight: 600;">{{ message }}</span>
             </div>
+            {% endfor %}
+        </div>
         {% endif %}
 
         {% block content %}{% endblock %}
     </main>
 
-    <script>
-        // Scripts globales
-    </script>
+    <footer
+        style="border-top: 1px solid var(--border-color); padding: 3rem 0; margin-top: auto; background: rgba(10, 11, 16, 0.5);">
+        <div class="container text-center">
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                © 2026 JobBoard. Designed with <i class="fas fa-heart" style="color: #ef4444;"></i> for talent.
+            </p>
+        </div>
+    </footer>
+
     {% block extra_js %}{% endblock %}
 </body>
+
 </html>

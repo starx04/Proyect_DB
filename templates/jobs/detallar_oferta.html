@@ -1,91 +1,134 @@
 {% extends "base.html" %}
 
+{% block title %}{{ oferta.titulo }} | JobBoard{% endblock %}
+
 {% block content %}
 <div class="fade-in-up">
-    <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-secondary mb-2" style="text-decoration: none;">← Volver al
-        listado</a>
+    <div style="margin-bottom: 2rem;">
+        <a href="{% url 'jobs:lista_ofertas' %}" class="btn btn-secondary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">
+            <i class="fas fa-chevron-left"></i> Volver al listado
+        </a>
+    </div>
 
-    <div class="row">
-        <div class="card" style="width: 100%;">
-            <div style="display: flex; justify-content: space-between; align-items: start;">
+    <div style="display: grid; grid-template-columns: 1fr 350px; gap: 2rem; align-items: start;">
+        <!-- Main Content -->
+        <div class="card" style="padding: 3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2.5rem;">
                 <div>
-                    <h1 style="color: var(--primary-color); margin-bottom: 5px;">{{ oferta.titulo }}</h1>
-                    <p style="font-size: 1.2rem; color: #666;">{{ oferta.empresa.nombre_empresa }} - {{
-                        oferta.ciudad|default:"Ciudad no definida" }}</p>
+                    <div style="background: rgba(139, 92, 246, 0.1); color: var(--secondary-glow); padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; display: inline-block;">
+                        {{ oferta.get_tipo_contrato_display }}
+                    </div>
+                    <h1 style="font-family: 'Outfit'; font-weight: 800; font-size: 2.8rem; margin-bottom: 1rem; line-height: 1.1;">{{ oferta.titulo }}</h1>
+                    <div style="display: flex; gap: 1.5rem; color: var(--text-secondary); font-size: 1rem;">
+                        <span><i class="far fa-building me-2"></i> {{ oferta.empresa.nombre_empresa }}</span>
+                        <span><i class="fas fa-map-marker-alt me-2"></i> {{ oferta.ciudad|default:"Ubicación remota" }}</span>
+                    </div>
                 </div>
                 <div style="text-align: right;">
-                    <span class="badge badge-info" style="font-size: 1rem;">{{ oferta.get_tipo_contrato_display
-                        }}</span>
-                    <p style="margin-top: 5px; font-size: 0.9rem; color: #888;">Publicado el {{
-                        oferta.fecha_publicacion|date:"d/m/Y" }}</p>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary);">Publicado el</p>
+                    <p style="font-weight: 600;">{{ oferta.fecha_publicacion|date:"d M, Y" }}</p>
                 </div>
             </div>
 
-            <hr>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: 2.5rem;">
 
-            <div class="content-section">
-                <h3>Descripción del Puesto</h3>
-                <p style="line-height: 1.6;">{{ oferta.descripcion|linebreaks }}</p>
+            <div style="margin-bottom: 3rem;">
+                <h3 style="font-family: 'Outfit'; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                    <i class="fas fa-align-left" style="color: var(--primary-glow);"></i> Descripción del Puesto
+                </h3>
+                <div style="color: var(--text-secondary); line-height: 1.8; font-size: 1.05rem;">
+                    {{ oferta.descripcion|linebreaks }}
+                </div>
             </div>
 
-            <div class="row mt-2">
-                <div class="col">
-                    <h3>Requisitos y Habilidades</h3>
-                    <ul>
-                        {% for hab in oferta.habilidades_requeridas.all %}
-                        <li>{{ hab.habilidad.nombre }} - <strong>Nivel: {{ hab.get_nivel_requerido_display }}</strong>
-                        </li>
-                        {% empty %}
-                        <li>No se especificaron habilidades técnicas adicionales.</li>
-                        {% endfor %}
-                    </ul>
+            <div>
+                <h3 style="font-family: 'Outfit'; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem;">
+                    <i class="fas fa-layer-group" style="color: var(--primary-glow);"></i> Requisitos y Habilidades
+                </h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                    {% for hab in oferta.habilidades_requeridas.all %}
+                    <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); padding: 0.8rem 1.2rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-weight: 600;">{{ hab.habilidad.nombre }}</span>
+                        <span style="background: var(--grad-primary); color: white; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">
+                            {{ hab.get_nivel_requerido_display }}
+                        </span>
+                    </div>
+                    {% empty %}
+                    <p style="color: var(--text-secondary); font-style: italic;">No se especificaron habilidades técnicas adicionales.</p>
+                    {% endfor %}
                 </div>
-                <div class="col">
-                    <h3>Detalles Adicionales</h3>
-                    <p><strong>Modalidad:</strong> {{ oferta.modalidad|default:"Presencial" }}</p>
-                    <p><strong>Salario:</strong>
-                        {% if oferta.salario_min %}
-                        ${{ oferta.salario_min }}{% if oferta.salario_max %} - ${{ oferta.salario_max }}{% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar Actions -->
+        <div style="position: sticky; top: 100px; display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="card" style="padding: 2rem;">
+                <h4 style="margin-bottom: 1.5rem; font-size: 1.1rem; color: var(--text-secondary);">Información del Empleo</h4>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+                    <div>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem;">Modalidad</p>
+                        <p style="font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-home" style="color: var(--accent-glow);"></i> {{ oferta.modalidad|default:"Presencial" }}
+                        </p>
+                    </div>
+                    <div>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem;">Rango Salarial</p>
+                        <p style="font-weight: 700; font-size: 1.2rem; color: var(--primary-glow);">
+                            {% if oferta.salario_min %}
+                                ${{ oferta.salario_min|floatformat:0 }}{% if oferta.salario_max %} - ${{ oferta.salario_max|floatformat:0 }}{% endif %}
+                            {% else %}
+                                A convenir
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                    {% if user.is_authenticated %}
+                        {% if user.tipo_usuario == 'candidato' %}
+                            {% if ya_postulado %}
+                                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1.2rem; border-radius: 12px; text-align: center;">
+                                    <i class="fas fa-check-circle" style="color: var(--accent-glow); font-size: 2rem; margin-bottom: 0.8rem; display: block;"></i>
+                                    <p style="color: var(--accent-glow); font-weight: 600; font-size: 0.95rem;">Ya te has postulado</p>
+                                    <small style="color: var(--text-secondary);">Estado: En proceso</small>
+                                </div>
+                            {% else %}
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <form action="{% url 'jobs:postularse' oferta.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary w-100" style="padding: 1rem;">
+                                            Aplicar Ahora <i class="fas fa-bolt ms-2"></i>
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'jobs:guardar_oferta' oferta.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-secondary w-100">
+                                            <i class="far fa-bookmark me-2"></i> Guardar Oferta
+                                        </button>
+                                    </form>
+                                </div>
+                            {% endif %}
                         {% else %}
-                        A convenir
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.2); text-align: center;">
+                                <p style="color: #f59e0b; font-size: 0.9rem;">Solo candidatos pueden aplicar.</p>
+                            </div>
                         {% endif %}
-                    </p>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary w-100">
+                            Ingresar para Aplicar
+                        </a>
+                    {% endif %}
                 </div>
             </div>
 
-            <hr>
-
-            <div style="text-align: center; margin-top: 20px;">
-                {% if user.is_authenticated %}
-                {% if user.tipo_usuario == 'candidato' %}
-                {% if ya_postulado %}
-                <div class="alert alert-info">
-                    <i class="fas fa-check-circle"></i> Ya te has postulado a esta oferta. Estás en el proceso de
-                    selección.
+            <div class="card" style="padding: 2rem; text-align: center;">
+                <h4 style="margin-bottom: 1rem; font-size: 1rem;">¿Compartir vacante?</h4>
+                <div style="display: flex; justify-content: center; gap: 1rem;">
+                    <a href="#" class="btn btn-secondary" style="padding: 0.8rem; border-radius: 50%; width: 45px; height: 45px;"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.8rem; border-radius: 50%; width: 45px; height: 45px;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="btn btn-secondary" style="padding: 0.8rem; border-radius: 50%; width: 45px; height: 45px;"><i class="fas fa-link"></i></a>
                 </div>
-                {% else %}
-                <div style="display: flex; gap: 10px; justify-content: center;">
-                    <form action="{% url 'jobs:postularse' oferta.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary"
-                            style="padding: 15px 40px; font-size: 1.2rem;">POSTULARSE AHORA</button>
-                    </form>
-                    <form action="{% url 'jobs:guardar_oferta' oferta.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-secondary"
-                            style="padding: 15px 40px; font-size: 1.2rem;">GUARDAR OFERTA</button>
-                    </form>
-                </div>
-                {% endif %}
-                {% else %}
-                <div class="alert alert-warning">
-                    Solo los candidatos pueden postularse.
-                </div>
-                {% endif %}
-                {% else %}
-                <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">Inicia sesión para
-                    postularte</a>
-                {% endif %}
             </div>
         </div>
     </div>
