@@ -1,24 +1,225 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">{{ titulo }}</div>
-                <div class="card-body">
-                    <form method="POST">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success">Guardar Oferta</button>
-                            <a href="{% url 'jobs:dashboard_empresa' %}" class="btn btn-secondary">Cancelar</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<style>
+    /* STANDALONE PREMIUM FORM STYLES */
+    :root {
+        --db-primary: #3b82f6;
+        --db-secondary: #8b5cf6;
+        --db-accent: #10b981;
+        --db-danger: #ef4444;
+        --db-warning: #f59e0b;
+        --db-card-bg: rgba(20, 22, 32, 0.7);
+        --db-border: rgba(255, 255, 255, 0.1);
+        --db-text: #ffffff;
+        --db-text-muted: #a0a0ab;
+    }
+
+    body {
+        background-color: #0a0b10 !important;
+    }
+
+    .form-wrapper {
+        color: var(--db-text);
+        font-family: 'Outfit', sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .form-card {
+        background: var(--db-card-bg);
+        backdrop-filter: blur(15px);
+        border: 1px solid var(--db-border);
+        border-radius: 28px;
+        padding: 40px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-header {
+        margin-bottom: 35px;
+        text-align: center;
+    }
+
+    .form-header h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--db-primary), var(--db-secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: var(--db-text-muted);
+        font-size: 1rem;
+    }
+
+    /* Form Fields Styling */
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--db-text-muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control,
+    select,
+    textarea {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--db-border) !important;
+        border-radius: 12px !important;
+        padding: 12px 18px !important;
+        color: var(--db-text) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-control:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: var(--db-primary) !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.15) !important;
+    }
+
+    /* Error Styling */
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: 5px 0 15px 0;
+        color: var(--db-danger);
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .non-field-errors {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        color: var(--db-danger);
+    }
+
+    /* Buttons */
+    .btn-group {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 15px;
+        margin-top: 40px;
+    }
+
+    .btn-save {
+        background: var(--db-primary);
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-save:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(59, 130, 246, 0.3);
+        filter: brightness(1.1);
+    }
+
+    .btn-cancel {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--db-text);
+        text-decoration: none;
+        padding: 15px;
+        border-radius: 14px;
+        font-weight: 600;
+        text-align: center;
+        border: 1px solid var(--db-border);
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Fix Django as_p table behavior */
+    form p {
+        margin-bottom: 25px;
+    }
+
+    form p label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--db-text-muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+</style>
+
+<div class="form-wrapper fade-in-up">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>{{ titulo|default:"Crear Nueva Oferta" }}</h2>
+            <p>Define los detalles de tu vacante para atraer al mejor talento</p>
         </div>
+
+        {% if form.non_field_errors %}
+        <div class="non-field-errors">
+            {% for error in form.non_field_errors %}
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="job-form">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    {{ field.errors }}
+                    {% endif %}
+                    {% if field.help_text %}
+                    <small style="color: var(--db-text-muted); font-size: 0.75rem; display: block; margin-top: 5px;">{{
+                        field.help_text }}</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-check-circle me-2"></i> Guardar Oferta
+                </button>
+                <a href="{% url 'jobs:dashboard_empresa' %}" class="btn-cancel">
+                    Cancelar
+                </a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

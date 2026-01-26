@@ -3,53 +3,194 @@
 {% block title %}Ingreso | JobBoard{% endblock %}
 
 {% block content %}
-<div class="fade-in-up"
-    style="display:flex; justify-content:center; align-items:center; min-height:70vh; padding: 2rem 0;">
-    <div class="card" style="width: 100%; max-width: 450px; padding: 3rem;">
-        <div style="text-align: center; margin-bottom: 2.5rem;">
-            <div
-                style="display: inline-flex; width: 64px; height: 64px; background: rgba(59, 130, 246, 0.1); border-radius: 16px; align-items: center; justify-content: center; margin-bottom: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.2);">
-                <i class="fas fa-rocket" style="color: var(--primary-glow); font-size: 1.8rem;"></i>
-            </div>
-            <h2 style="font-family: 'Outfit'; font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem;">Bienvenido</h2>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">Ingresa a tu cuenta para continuar.</p>
+<style>
+    /* STANDALONE PREMIUM LOGIN STYLES */
+    :root {
+        --auth-primary: #3b82f6;
+        --auth-bg: #0a0b10;
+        --auth-card: rgba(20, 22, 32, 0.8);
+        --auth-border: rgba(255, 255, 255, 0.1);
+        --auth-text: #ffffff;
+        --auth-muted: #94a3b8;
+    }
+
+    body { background-color: var(--auth-bg) !important; }
+
+    .auth-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 40px 20px;
+    }
+
+    .auth-card {
+        background: var(--auth-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--auth-border);
+        border-radius: 32px;
+        width: 100%;
+        max-width: 440px;
+        padding: 50px;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .auth-logo {
+        width: 64px;
+        height: 64px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.8rem;
+        color: var(--auth-primary);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .auth-header h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--auth-text);
+        letter-spacing: -1px;
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: var(--auth-muted);
+        font-size: 0.9rem;
+    }
+
+    .form-control {
+        width: 100% !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--auth-border) !important;
+        border-radius: 14px !important;
+        padding: 14px 20px !important;
+        color: var(--auth-text) !important;
+        font-size: 1rem !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-control:focus {
+        outline: none !important;
+        border-color: var(--auth-primary) !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.2) !important;
+    }
+
+    .btn-auth {
+        width: 100%;
+        background: var(--auth-primary);
+        color: white;
+        padding: 16px;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 20px;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+        filter: brightness(1.1);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 35px;
+        padding-top: 30px;
+        border-top: 1px solid var(--auth-border);
+    }
+
+    .auth-footer p {
+        color: var(--auth-muted);
+        font-size: 0.95rem;
+    }
+
+    .auth-link {
+        color: var(--auth-primary);
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="auth-container fade-in-up">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo"><i class="fas fa-rocket"></i></div>
+            <h2>Bienvenido</h2>
+            <p style="color: var(--auth-muted);">Ingresa a tu cuenta para continuar.</p>
         </div>
 
         <form method="post">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
-            <div
-                style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; color: #ef4444; font-size: 0.9rem;">
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 15px; border-radius: 12px; margin-bottom: 25px; color: #ef4444; font-size: 0.9rem;">
                 {% for error in form.non_field_errors %}
-                <p><i class="fas fa-exclamation-circle me-2"></i> {{ error }}</p>
+                <p style="margin:0;"><i class="fas fa-exclamation-circle me-2"></i> {{ error }}</p>
                 {% endfor %}
             </div>
             {% endif %}
 
             {% for field in form %}
             <div class="form-group">
-                <label for="{{ field.id_for_label }}" style="font-weight: 600; color: var(--text-secondary);">{{ field.label }}</label>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}
                 {% if field.errors %}
-                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.4rem;">
+                <div style="color: #ef4444; font-size: 0.85rem; margin-top: 8px; font-weight: 600;">
                     {% for error in field.errors %} {{ error }} {% endfor %}
                 </div>
                 {% endif %}
             </div>
             {% endfor %}
 
-            <button type="submit" class="btn btn-primary w-100" style="padding: 1rem; margin-top: 1rem;">
-                Iniciar Sesión <i class="fas fa-sign-in-alt ms-2"></i>
+            <button type="submit" class="btn-auth">
+                Iniciar Sesión <i class="fas fa-sign-in-alt"></i>
             </button>
         </form>
 
-        <div
-            style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">
-                ¿No tienes una cuenta? <a href="{% url 'registro' %}"
-                    style="font-weight: 700; color: var(--primary-glow);">Regístrate ahora</a>
-            </p>
+        <div class="auth-footer">
+            <p>¿No tienes una cuenta? <a href="{% url 'registro' %}" class="auth-link">Regístrate ahora</a></p>
         </div>
     </div>
 </div>

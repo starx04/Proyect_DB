@@ -1,165 +1,307 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
+    /* STANDALONE PREMIUM WIZARD STYLES */
     :root {
-        --primary-blue: #2563eb;
-        --success-green: #10b981;
-        --text-dark: #0f172a;
-        --bg-soft: #f1f5f9;
-        --step-active: #3b82f6;
-        --step-done: #10b981;
+        --wz-primary: #3b82f6;
+        --wz-secondary: #8b5cf6;
+        --wz-success: #10b981;
+        --wz-card: rgba(20, 22, 32, 0.7);
+        --wz-border: rgba(255, 255, 255, 0.1);
+        --wz-text: #ffffff;
+        --wz-muted: #94a3b8;
     }
 
     body {
-        background-color: var(--bg-soft);
-        font-family: 'Inter', sans-serif;
+        background-color: #0a0b10 !important;
     }
 
-    .wizard-card {
-        background: #ffffff;
-        border-radius: 24px;
-        border: none;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    .wz-wrapper {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Steps Hub */
+    .wz-steps {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
     }
 
     .step-pill {
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 8px 16px;
+        padding: 10px 20px;
         border-radius: 50px;
-        text-transform: uppercase;
+        font-size: 0.85rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--wz-border);
+        color: var(--wz-muted);
     }
 
-    .bg-done {
-        background-color: var(--success-green) !important;
+    .pill-done {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--wz-success);
+        color: var(--wz-success);
+    }
+
+    .pill-active {
+        background: var(--wz-primary);
+        border-color: var(--wz-primary);
+        color: white;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .wz-card {
+        background: var(--wz-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--wz-border);
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .wz-top-bar {
+        height: 8px;
+        background: linear-gradient(90deg, var(--wz-primary), var(--wz-secondary));
+    }
+
+    .wz-body {
+        padding: 50px;
+    }
+
+    .wz-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: var(--wz-primary);
+        font-size: 1.5rem;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .wz-header h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .wz-header p {
+        color: var(--wz-muted);
+        font-size: 1rem;
+    }
+
+    /* Question Box */
+    .question-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--wz-border);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .question-box h5 {
+        margin-bottom: 20px;
+        font-weight: 700;
         color: white;
     }
 
-    .bg-active {
-        background-color: var(--primary-blue) !important;
+    /* Custom Toggle */
+    .btn-toggle {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--wz-border);
         color: white;
-    }
-
-    .bg-pending {
-        background-color: #fff !important;
-        color: #64748b;
-        border: 1px solid #e2e8f0;
-    }
-
-    .modern-form label {
+        padding: 12px 30px;
+        border-radius: 50px;
         font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 0.6rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .modern-form input,
-    .modern-form textarea,
-    .modern-form select {
-        padding: 0.8rem 1.2rem;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
+    .btn-check:checked+.btn-toggle {
+        background: var(--wz-primary);
+        border-color: var(--wz-primary);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
     }
 
-    .btn-main {
-        background-color: var(--primary-blue);
-        border: none;
-        padding: 12px 35px;
-        border-radius: 50px;
+    /* Form Design */
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--wz-muted);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .form-control,
+    select,
+    textarea {
+        width: 100% !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--wz-border) !important;
+        border-radius: 12px !important;
+        padding: 12px 18px !important;
+        color: white !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-control:focus {
+        border-color: var(--wz-primary) !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        outline: none !important;
+    }
+
+    /* Buttons */
+    .wz-footer {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid var(--wz-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-back {
+        color: var(--wz-muted);
+        text-decoration: none;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-next {
+        background: var(--wz-primary);
         color: white;
+        padding: 15px 40px;
+        border-radius: 14px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-next:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+    }
+
+    .alert-premium {
+        background: rgba(59, 130, 246, 0.05);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        padding: 15px;
+        border-radius: 14px;
+        color: var(--wz-primary);
+        font-size: 0.9rem;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 </style>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
+<div class="wz-wrapper fade-in-up">
+    <!-- Progress Indicator -->
+    <div class="wz-steps">
+        <span class="step-pill pill-done"><i class="fas fa-check"></i> 1. Personales</span>
+        <span class="step-pill pill-done"><i class="fas fa-check"></i> 2. Experiencia</span>
+        <span class="step-pill pill-active">3. Habilidades</span>
+        <span class="step-pill">4. Idiomas</span>
+        <span class="step-pill">5. Archivos</span>
+    </div>
 
-            <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
-                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Datos</span>
-                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Experiencia</span>
-                <span class="step-pill bg-active shadow-sm">3. Habilidades</span>
-                <span class="step-pill bg-pending shadow-sm">4. Archivos</span>
-            </div>
+    <!-- Wizard Card -->
+    <div class="wz-card">
+        <div class="wz-top-bar"></div>
+        <div class="wz-body">
+            <header class="wz-header">
+                <div class="icon-box"><i class="fas fa-magic"></i></div>
+                <h2>Habilidades y Competencias</h2>
+                <p>Destaca lo que sabes hacer mejor ante los reclutadores.</p>
+            </header>
 
-            <div class="card wizard-card overflow-hidden">
-                <div style="height: 8px; background: linear-gradient(90deg, #3b82f6, #6366f1);"></div>
+            <form method="post" id="skillsForm">
+                {% csrf_token %}
 
-                <div class="card-body p-4 p-md-5">
-                    <header class="text-center mb-5">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                            style="width: 60px; height: 60px;">
-                            <i class="fas fa-lightbulb fs-3"></i>
-                        </div>
-                        <h2 class="fw-bold text-dark mb-1">Habilidades y Competencias</h2>
-                        <p class="text-secondary">Destaca lo que sabes hacer mejor</p>
-                    </header>
+                <div class="question-box">
+                    <h5>¿Desea agregar habilidades técnicas?</h5>
+                    <div style="display: flex; justify-content: center; gap: 15px;">
+                        <input type="radio" class="btn-check" name="tiene_habilidades" id="hab_si" value="si" checked>
+                        <label class="btn-toggle" for="hab_si"><i class="fas fa-plus-circle"></i> Sí, agregar
+                            ahora</label>
 
-                    <form method="post" class="modern-form" id="skillsForm">
-                        {% csrf_token %}
-
-                        <!-- PREGUNTA INICIAL -->
-                        <div class="text-center mb-5 p-4 bg-light rounded-3">
-                            <h5 class="fw-bold mb-3">¿Posee habilidades específicas para destacar?</h5>
-                            <div class="btn-group" role="group">
-                                <input type="radio" class="btn-check" name="tiene_habilidades" id="hab_si" value="si"
-                                    checked>
-                                <label class="btn btn-outline-primary rounded-pill px-4 me-2" for="hab_si">
-                                    <i class="fas fa-check-circle me-1"></i> Sí, agregar habilidad
-                                </label>
-
-                                <input type="radio" class="btn-check" name="tiene_habilidades" id="hab_no" value="no">
-                                <label class="btn btn-outline-secondary rounded-pill px-4" for="hab_no">
-                                    <i class="fas fa-times-circle me-1"></i> No por ahora
-                                </label>
-                            </div>
-                        </div>
-
-                        <div id="formFieldsContainer">
-                            <div class="alert alert-info border-0 rounded-3 small">
-                                <i class="fas fa-info-circle me-2"></i> Añade tus habilidades una por una. Podrás
-                                agregar más en tu perfil luego.
-                            </div>
-
-                            <div class="row g-3">
-                                <div class="col-12">
-                                    <label>Nombre de la habilidad *</label>
-                                    {{ form.nombre_habilidad }}
-                                    <div class="form-text">Ej: Java, Liderazgo, Photoshop, Contabilidad...</div>
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Nivel de competencia *</label>
-                                    {{ form.nivel }}
-                                </div>
-                                <div class="col-md-6">
-                                    <label>Años de experiencia *</label>
-                                    {{ form.anios_experiencia }}
-                                </div>
-                                <div class="col-12">
-                                    <label>Contexto de uso</label>
-                                    {{ form.contexto_uso }}
-                                    <div class="form-text">Menciona brevemente en qué proyectos o empresas la aplicaste.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
-                            <a href="{% url 'wizard_perfil' paso=2 %}"
-                                class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
-                                <i class="fas fa-arrow-left me-2"></i> Volver
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-main" id="submitBtn">
-                                Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>
-                            </button>
-                        </div>
-
-                    </form>
+                        <input type="radio" class="btn-check" name="tiene_habilidades" id="hab_no" value="no">
+                        <label class="btn-toggle" for="hab_no"><i class="fas fa-forward"></i> No por ahora</label>
+                    </div>
                 </div>
-            </div>
+
+                <div id="formFieldsContainer">
+                    <div class="alert-premium">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Puedes añadir tus habilidades una por una. Tendrás oportunidad de agregar más en tu perfil
+                            después.</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Nombre de la habilidad *</label>
+                                {{ form.nombre_habilidad }}
+                                <small style="color: var(--wz-muted); margin-top: 5px; display: block;">Ej: Python,
+                                    Liderazgo, SQL, Figma...</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Nivel de dominio *</label>
+                                {{ form.nivel }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Años de experiencia *</label>
+                                {{ form.anios_experiencia }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Contexto de uso</label>
+                                {{ form.contexto_uso }}
+                                <small style="color: var(--wz-muted); margin-top: 5px; display: block;">Menciona
+                                    brevemente dónde aplicaste esta habilidad.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wz-footer">
+                    <a href="{% url 'wizard_perfil' paso=2 %}" class="btn-back"
+                        style="text-decoration: none; font-weight: 700; color: var(--wz-muted);">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </a>
+                    <button type="submit" class="btn-next" id="submitBtn">
+                        Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -172,22 +314,19 @@
         const btn = document.getElementById('submitBtn');
         const inputs = container.querySelectorAll('input, select, textarea');
 
-        function toggleForm() {
+        function toggle() {
             if (radioNo.checked) {
                 container.style.display = 'none';
-                btn.innerHTML = 'Saltar paso <i class="fas fa-forward ms-2"></i>';
-                inputs.forEach(input => input.removeAttribute('required'));
+                btn.innerHTML = 'Saltar Paso <i class="fas fa-forward ms-2"></i>';
+                inputs.forEach(i => i.removeAttribute('required'));
             } else {
                 container.style.display = 'block';
-                btn.innerHTML = 'Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>';
-                // Note: Re-enabling required logic if we were using browser validation
-                // Here we rely on backend validation which runs because 'tiene_habilidades' is 'si'
+                btn.innerHTML = 'Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>';
             }
         }
-
-        radioSi.addEventListener('change', toggleForm);
-        radioNo.addEventListener('change', toggleForm);
-        toggleForm();
+        radioSi.addEventListener('change', toggle);
+        radioNo.addEventListener('change', toggle);
+        toggle();
     });
 </script>
 {% endblock %}

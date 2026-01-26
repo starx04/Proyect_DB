@@ -1,160 +1,301 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
+    /* STANDALONE PREMIUM WIZARD STYLES */
     :root {
-        --primary-blue: #2563eb;
-        --success-green: #10b981;
-        --text-dark: #0f172a;
-        --bg-soft: #f1f5f9;
+        --wz-primary: #3b82f6;
+        --wz-secondary: #8b5cf6;
+        --wz-success: #10b981;
+        --wz-card: rgba(20, 22, 32, 0.7);
+        --wz-border: rgba(255, 255, 255, 0.1);
+        --wz-text: #ffffff;
+        --wz-muted: #94a3b8;
     }
 
     body {
-        background-color: var(--bg-soft);
-        font-family: 'Inter', sans-serif;
+        background-color: #0a0b10 !important;
     }
 
-    .wizard-card {
-        background: #ffffff;
-        border-radius: 24px;
-        border: none;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    .wz-wrapper {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Steps Hub */
+    .wz-steps {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
     }
 
     .step-pill {
-        font-size: 0.75rem;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 0.85rem;
         font-weight: 700;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--wz-border);
+        color: var(--wz-muted);
+    }
+
+    .pill-done {
+        background: rgba(16, 185, 129, 0.1);
+        border-color: var(--wz-success);
+        color: var(--wz-success);
+    }
+
+    .pill-active {
+        background: var(--wz-primary);
+        border-color: var(--wz-primary);
+        color: white;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .wz-card {
+        background: var(--wz-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--wz-border);
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .wz-top-bar {
+        height: 8px;
+        background: linear-gradient(90deg, var(--wz-primary), var(--wz-secondary));
+    }
+
+    .wz-body {
+        padding: 50px;
+    }
+
+    .wz-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        background: rgba(59, 130, 246, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: var(--wz-primary);
+        font-size: 1.5rem;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .wz-header h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .wz-header p {
+        color: var(--wz-muted);
+        font-size: 1rem;
+    }
+
+    /* Question Box */
+    .question-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--wz-border);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .question-box h5 {
+        margin-bottom: 20px;
+        font-weight: 700;
+        color: white;
+    }
+
+    /* Custom Toggle */
+    .btn-toggle {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--wz-border);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-check:checked+.btn-toggle {
+        background: var(--wz-primary);
+        border-color: var(--wz-primary);
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Form Design */
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--wz-muted);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+    }
+
+    .form-control,
+    select {
+        width: 100% !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--wz-border) !important;
+        border-radius: 12px !important;
+        padding: 12px 18px !important;
+        color: white !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-control:focus {
+        border-color: var(--wz-primary) !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        outline: none !important;
+    }
+
+    /* Badges */
+    .lang-badge {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--wz-border);
+        color: white;
         padding: 8px 16px;
         border-radius: 50px;
-        text-transform: uppercase;
-    }
-
-    .bg-done {
-        background-color: var(--success-green) !important;
-        color: white;
-    }
-
-    .bg-active {
-        background-color: var(--primary-blue) !important;
-        color: white;
-    }
-
-    .bg-pending {
-        background-color: #fff !important;
-        color: #64748b;
-        border: 1px solid #e2e8f0;
-    }
-
-    .modern-form label {
+        font-size: 0.9rem;
         font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 0.6rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-    .modern-form .form-control,
-    .modern-form .form-select {
-        padding: 0.8rem 1.2rem;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
+    /* Buttons */
+    .wz-footer {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid var(--wz-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    .btn-main {
-        background-color: var(--primary-blue);
-        border: none;
-        padding: 12px 35px;
-        border-radius: 50px;
+    .btn-back {
+        color: var(--wz-muted);
+        text-decoration: none;
         font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-next {
+        background: var(--wz-primary);
         color: white;
+        padding: 15px 40px;
+        border-radius: 14px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-next:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
     }
 </style>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
+<div class="wz-wrapper fade-in-up">
+    <!-- Progress Indicator -->
+    <div class="wz-steps">
+        <span class="step-pill pill-done"><i class="fas fa-check"></i> 1. Personales</span>
+        <span class="step-pill pill-done"><i class="fas fa-check"></i> 2. Experiencia</span>
+        <span class="step-pill pill-done"><i class="fas fa-check"></i> 3. Habilidades</span>
+        <span class="step-pill pill-active">4. Idiomas</span>
+        <span class="step-pill">5. Archivos</span>
+    </div>
 
-            <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
-                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Datos</span>
-                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Experiencia</span>
-                <span class="step-pill bg-done shadow-sm"><i class="fas fa-check me-1"></i> Habilidades</span>
-                <span class="step-pill bg-active shadow-sm">4. Idiomas</span>
-                <span class="step-pill bg-pending shadow-sm">5. Archivos</span>
-            </div>
+    <!-- Wizard Card -->
+    <div class="wz-card">
+        <div class="wz-top-bar"></div>
+        <div class="wz-body">
+            <header class="wz-header">
+                <div class="icon-box"><i class="fas fa-globe-americas"></i></div>
+                <h2>Idiomas y Lenguas</h2>
+                <p>¿Qué idiomas utilizas para comunicarte profesionalmente?</p>
+            </header>
 
-            <div class="card wizard-card overflow-hidden">
-                <div style="height: 8px; background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
+            <form method="post">
+                {% csrf_token %}
 
-                <div class="card-body p-4 p-md-5">
-                    <header class="text-center mb-5">
-                        <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                            style="width: 60px; height: 60px;">
-                            <i class="fas fa-globe-americas fs-3"></i>
-                        </div>
-                        <h2 class="fw-bold text-dark mb-1">Idiomas y Lenguas</h2>
-                        <p class="text-secondary">¿Cuántos idiomas dominas?</p>
-                    </header>
+                <div class="question-box">
+                    <h5>¿Habla otros idiomas además de su lengua materna?</h5>
+                    <div style="display: flex; justify-content: center; gap: 15px;">
+                        <input type="radio" class="btn-check" name="tiene_idiomas" id="id_si" value="si" checked>
+                        <label class="btn-toggle" for="id_si"><i class="fas fa-plus-circle"></i> Sí, agregar uno</label>
 
-                    <form method="post" class="modern-form">
-                        {% csrf_token %}
-
-                        <!-- PREGUNTA INICIAL -->
-                        <div class="text-center mb-4 p-4 bg-light rounded-3">
-                            <h5 class="fw-bold mb-3">¿Habla otros idiomas además de su lengua materna?</h5>
-                            <div class="btn-group" role="group">
-                                <input type="radio" class="btn-check" name="tiene_idiomas" id="id_si" value="si"
-                                    checked>
-                                <label class="btn btn-outline-primary rounded-pill px-4 me-2" for="id_si">
-                                    <i class="fas fa-plus-circle me-1"></i> Sí, agregar
-                                </label>
-
-                                <input type="radio" class="btn-check" name="tiene_idiomas" id="id_no" value="no">
-                                <label class="btn btn-outline-secondary rounded-pill px-4" for="id_no">
-                                    <i class="fas fa-share me-1"></i> No por ahora
-                                </label>
-                            </div>
-                        </div>
-
-                        <div id="idiomaFields">
-                            <div class="row g-3">
-                                <div class="col-md-7">
-                                    <label>Nombre del Idioma *</label>
-                                    {{ form.nombre_idioma }}
-                                </div>
-                                <div class="col-md-5">
-                                    <label>Nivel de Dominio *</label>
-                                    {{ form.nivel }}
-                                </div>
-                            </div>
-
-                            {% if idiomas %}
-                            <div class="mt-4">
-                                <h6 class="fw-bold"><i class="fas fa-list-ul me-2"></i> Idiomas ya registrados:</h6>
-                                <div class="d-flex flex-wrap gap-2 mt-2">
-                                    {% for item in idiomas %}
-                                    <span class="badge bg-secondary p-2 rounded-pill">
-                                        {{ item.idioma.nombre }} - {{ item.nivel }}
-                                    </span>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
-                            <a href="{% url 'wizard_perfil' paso=3 %}"
-                                class="btn btn-outline-secondary rounded-pill px-4 fw-bold">
-                                <i class="fas fa-arrow-left me-2"></i> Volver
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-main" id="submitBtn">
-                                Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>
-                            </button>
-                        </div>
-
-                    </form>
+                        <input type="radio" class="btn-check" name="tiene_idiomas" id="id_no" value="no">
+                        <label class="btn-toggle" for="id_no"><i class="fas fa-forward"></i> No por ahora</label>
+                    </div>
                 </div>
-            </div>
+
+                <div id="idiomaFields">
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <div class="form-group">
+                                <label>Idioma *</label>
+                                {{ form.nombre_idioma }}
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Nivel de Dominio *</label>
+                                {{ form.nivel }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if idiomas %}
+                    <div class="mt-4">
+                        <h6
+                            style="font-weight: 700; color: var(--wz-muted); margin-bottom: 15px; font-size: 0.8rem; text-transform: uppercase;">
+                            Idiomas Registrados</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for item in idiomas %}
+                            <div class="lang-badge">
+                                <i class="fas fa-language" style="color: var(--wz-primary);"></i>
+                                {{ item.idioma.nombre }} - <span style="color: var(--wz-primary);">{{ item.nivel
+                                    }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="wz-footer">
+                    <a href="{% url 'wizard_perfil' paso=3 %}" class="btn-back"
+                        style="text-decoration: none; font-weight: 700; color: var(--wz-muted);">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </a>
+                    <button type="submit" class="btn-next" id="submitBtn">
+                        Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -171,22 +312,12 @@
             if (radioNo.checked) {
                 fields.style.display = 'none';
                 btn.innerHTML = 'Saltar e ir a Archivos <i class="fas fa-forward ms-2"></i>';
-                // Disable required validation when skipping
-                inputs.forEach(input => {
-                    input.removeAttribute('required');
-                });
+                inputs.forEach(i => i.removeAttribute('required'));
             } else {
                 fields.style.display = 'block';
-                btn.innerHTML = 'Guardar y Continuar <i class="fas fa-chevron-right ms-2 small"></i>';
-                // Re-enable required validation
-                inputs.forEach(input => {
-                    if (input.name !== 'nivel') { // nivel is in a select, handle separately
-                        input.setAttribute('required', 'required');
-                    }
-                });
+                btn.innerHTML = 'Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>';
             }
         }
-
         radioSi.addEventListener('change', toggle);
         radioNo.addEventListener('change', toggle);
         toggle();

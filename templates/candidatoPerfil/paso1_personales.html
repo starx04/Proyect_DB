@@ -1,227 +1,268 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
+    /* STANDALONE PREMIUM WIZARD STYLES */
     :root {
-        --primary-color: #2563eb;
-        --text-main: #1e293b;
-        --bg-gray: #f8fafc;
+        --wz-primary: #3b82f6;
+        --wz-secondary: #8b5cf6;
+        --wz-card: rgba(20, 22, 32, 0.7);
+        --wz-border: rgba(255, 255, 255, 0.1);
+        --wz-text: #ffffff;
+        --wz-muted: #94a3b8;
     }
 
     body {
-        background-color: var(--bg-gray);
-        font-family: 'Inter', sans-serif;
+        background-color: #0a0b10 !important;
     }
 
-    .wizard-card {
-        background: #ffffff;
-        border-radius: 24px;
-        border: none;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    .wz-wrapper {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0 20px;
     }
 
-    /* Estilización forzada para los campos que genera Django {{ form.as_p }} */
-    .modern-form p {
-        margin-bottom: 1.5rem;
+    /* Steps Hub */
+    .wz-steps {
         display: flex;
-        flex-direction: column;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
     }
 
-    .modern-form label {
-        font-weight: 600;
-        color: var(--text-main);
-        margin-bottom: 0.6rem;
-        font-size: 0.95rem;
-    }
-
-    .modern-form input,
-    .modern-form textarea,
-    .modern-form select {
-        padding: 0.8rem 1.2rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: all 0.2s ease;
-        background-color: #fff;
-    }
-
-    .modern-form input:focus,
-    .modern-form textarea:focus {
-        border-color: var(--primary-color);
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-    }
-
-    /* Indicador de pasos minimalista */
-    .step-indicator {
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.05em;
-        padding: 8px 16px;
+    .step-pill {
+        padding: 10px 20px;
         border-radius: 50px;
-    }
-
-    .btn-next {
-        background-color: var(--primary-color);
-        border: none;
-        padding: 12px 40px;
-        border-radius: 50px;
+        font-size: 0.85rem;
         font-weight: 700;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--wz-border);
+        color: var(--wz-muted);
         transition: all 0.3s ease;
     }
 
-    .btn-next:hover {
-        background-color: #1d4ed8;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+    .pill-active {
+        background: var(--wz-primary);
+        border-color: var(--wz-primary);
+        color: white;
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
     }
 
-    .shake-animation {
+    .wz-card {
+        background: var(--wz-card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--wz-border);
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .wz-top-bar {
+        height: 8px;
+        background: linear-gradient(90deg, var(--wz-primary), var(--wz-secondary));
+    }
+
+    .wz-body {
+        padding: 50px;
+    }
+
+    .wz-header {
+        margin-bottom: 40px;
+    }
+
+    .wz-header h2 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .wz-header p {
+        color: var(--wz-muted);
+        font-size: 1rem;
+    }
+
+    /* Form Design */
+    .form-grid {
+        display: grid;
+        gap: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--wz-muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+    }
+
+    .form-control,
+    select,
+    textarea {
+        width: 100% !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid var(--wz-border) !important;
+        border-radius: 14px !important;
+        padding: 14px 20px !important;
+        color: white !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-control:focus {
+        border-color: var(--wz-primary) !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.15) !important;
+        outline: none !important;
+    }
+
+    .error-msg {
+        color: #ef4444;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Buttons */
+    .wz-footer {
+        margin-top: 50px;
+        padding-top: 30px;
+        border-top: 1px solid var(--wz-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-next {
+        background: var(--wz-primary);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 14px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-next:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.4);
+    }
+
+    .shake-anim {
         animation: shake 0.5s;
     }
 
     @keyframes shake {
-        0% {
-            transform: translateX(0);
-        }
 
-        25% {
-            transform: translateX(-5px);
-        }
-
-        50% {
-            transform: translateX(5px);
-        }
-
-        75% {
-            transform: translateX(-5px);
-        }
-
+        0%,
         100% {
             transform: translateX(0);
+        }
+
+        20%,
+        60% {
+            transform: translateX(-5px);
+        }
+
+        40%,
+        80% {
+            transform: translateX(5px);
         }
     }
 </style>
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-7 col-md-9">
+<div class="wz-wrapper fade-in-up">
+    <!-- Progress Indicator -->
+    <div class="wz-steps">
+        <span class="step-pill pill-active">1. Datos Personales</span>
+        <span class="step-pill">2. Experiencia</span>
+        <span class="step-pill">3. Habilidades</span>
+        <span class="step-pill">4. Idiomas</span>
+        <span class="step-pill">5. Archivos</span>
+    </div>
 
-            <div class="d-flex justify-content-center gap-2 mb-5 flex-wrap">
-                <span class="step-pill bg-primary text-white shadow-sm">1. Datos</span>
-                <span class="step-pill bg-white text-muted border">2. Experiencia</span>
-                <span class="step-pill bg-white text-muted border">3. Habilidades</span>
-                <span class="step-pill bg-white text-muted border">4. Idiomas</span>
-                <span class="step-pill bg-white text-muted border">5. Archivos</span>
-            </div>
+    <!-- Wizard Card -->
+    <div class="wz-card">
+        <div class="wz-top-bar"></div>
+        <div class="wz-body">
+            <header class="wz-header">
+                <h2>Información Básica</h2>
+                <p>Configura tu identidad para que las empresas puedan contactarte.</p>
+            </header>
 
-            <div class="card wizard-card overflow-hidden">
-                <div style="height: 8px; background: linear-gradient(90deg, #2563eb, #7c3aed);"></div>
+            <form method="post" class="modern-form">
+                {% csrf_token %}
 
-                <div class="card-body p-4 p-md-5">
-                    <header class="mb-5">
-                        <h2 class="fw-bold text-dark mb-2">Información Básica</h2>
-                        <p class="text-secondary">Completa tus datos personales para que podamos validar tu perfil
-                            profesional.</p>
-                    </header>
+                {% if form.non_field_errors %}
+                <div
+                    style="background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; padding: 15px; border-radius: 12px; margin-bottom: 25px; color: #ef4444;">
+                    {% for error in form.non_field_errors %} <p style="margin:0;"><i
+                            class="fas fa-exclamation-circle me-2"></i> {{ error }}</p> {% endfor %}
+                </div>
+                {% endif %}
 
-                    <form method="post" class="modern-form">
-                        {% csrf_token %}
-
-                        {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {% for error in form.non_field_errors %}
-                            {{ error }}
-                            {% endfor %}
+                <div class="form-grid">
+                    {% for field in form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="error-msg">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            {% for error in field.errors %}{{ error }}{% endfor %}
                         </div>
                         {% endif %}
-
-                        <div class="form-body">
-                            {{ form.as_p }}
-                        </div>
-
-                        <div
-                            class="footer-actions d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
-                            <span class="text-muted small">
-                                <i class="fas fa-lock me-1"></i> Datos protegidos
-                            </span>
-                            <button type="submit" class="btn btn-primary btn-next">
-                                Continuar <i class="fas fa-arrow-right ms-2"></i>
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+                    {% endfor %}
                 </div>
-            </div>
 
-            <p class="text-center mt-4 text-muted small">
-                ¿Tienes problemas con el formulario? <a href="#"
-                    class="fw-bold text-primary text-decoration-none">Contactar soporte</a>
-            </p>
+                <div class="wz-footer">
+                    <span style="color: var(--wz-muted); font-size: 0.85rem;">
+                        <i class="fas fa-shield-alt me-2"></i> Tus datos están seguros
+                    </span>
+                    <button type="submit" class="btn-next">
+                        Continuar Flujo <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const titleInput = document.getElementById('id_titulo_profesional');
-        const phoneInput = document.getElementById('id_telefono');
+        const idInput = document.getElementById('id_numero_identificacion');
 
-        // Helper to show/hide errors
-        function showError(input, message) {
-            // Remove existing error if any
-            let existingError = input.parentNode.querySelector('.js-error');
-            if (existingError) existingError.remove();
-
-            if (message) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'js-error fw-bold shake-animation';
-                errorDiv.style.color = '#dc2626'; // Strong red
-                errorDiv.style.marginTop = '6px';
-                errorDiv.style.fontSize = '0.9rem';
-                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i> ${message}`;
-
-                input.parentNode.appendChild(errorDiv);
-
-                input.classList.add('is-invalid');
-                input.style.borderColor = '#dc2626';
-                input.style.backgroundColor = '#fef2f2'; // Light red background
-            } else {
-                input.classList.remove('is-invalid');
-                input.style.borderColor = '';
-                input.style.backgroundColor = '';
+        function validateCedula(cedula) {
+            if (cedula.length !== 10) return false;
+            let suma = 0;
+            const coef = [2, 1, 2, 1, 2, 1, 2, 1, 2];
+            for (let i = 0; i < 9; i++) {
+                let v = parseInt(cedula[i]) * coef[i];
+                if (v >= 10) v -= 9;
+                suma += v;
             }
+            let check = (10 - (suma % 10)) % 10;
+            return check === parseInt(cedula[9]);
         }
 
-        if (titleInput) {
-            titleInput.addEventListener('input', function (e) {
-                const value = e.target.value;
-                // Regex: Solo letras y espacios
-                if (!/^[a-zA-Z\s]*$/.test(value)) {
-                    showError(this, 'Solo se permiten letras y espacios.');
-                } else {
-                    showError(this, '');
-                }
-            });
-        }
+        if (idInput) {
+            idInput.addEventListener('input', function () {
+                const val = this.value.replace(/\D/g, '').slice(0, 10);
+                this.value = val;
 
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function (e) {
-                // Forzar límite de 10 caracteres físicamente si el navegador no respeta maxlength
-                if (this.value.length > 10) {
-                    this.value = this.value.slice(0, 10);
-                }
-
-                const value = e.target.value;
-                // Regex: Solo números
-                if (!/^\d*$/.test(value)) {
-                    showError(this, 'Solo se permiten números.');
-                } else if (value.length > 0 && value.length !== 10) {
-                    showError(this, 'El teléfono debe tener exactamente 10 dígitos.');
+                if (val.length === 10 && !validateCedula(val)) {
+                    this.parentElement.classList.add('shake-anim');
+                    setTimeout(() => this.parentElement.classList.remove('shake-anim'), 500);
+                    this.style.borderColor = '#ef4444';
                 } else {
-                    showError(this, '');
+                    this.style.borderColor = '';
                 }
             });
         }

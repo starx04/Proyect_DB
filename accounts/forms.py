@@ -21,12 +21,48 @@ class CustomAuthenticationForm(AuthenticationForm):
 class CandidatoPerfilForm(forms.ModelForm):
     class Meta:
         model = Candidato
-        fields = ['titulo_profesional', 'resumen_perfil', 'telefono', 'salario_esperado']
+        fields = ['nombre_completo', 'numero_identificacion', 'titulo_profesional', 'resumen_perfil', 'telefono', 'salario_esperado']
         widgets = {
+             'nombre_completo': forms.TextInput(attrs={'class': 'form-control'}),
+             'numero_identificacion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 1712345678'}),
              'titulo_profesional': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Desarrollador Backend'}),
              'telefono': forms.TextInput(attrs={'class': 'form-control', 'type': 'tel', 'maxlength': '10'}),
              'salario_esperado': forms.NumberInput(attrs={'class': 'form-control', 'min': '0', 'step': '0.01'}),
         }
+
+    def clean_numero_identificacion(self):
+        cedula = self.cleaned_data.get('numero_identificacion')
+        if not cedula:
+            return cedula
+        
+        # Validación de cédula ecuatoriana (10 dígitos)
+        if len(cedula) != 10 or not cedula.isdigit():
+            raise forms.ValidationError("La cédula debe tener 10 dígitos numéricos.")
+        
+        provincia = int(cedula[0:2])
+        if provincia < 0 or (provincia > 24 and provincia != 30):
+            raise forms.ValidationError("Código de provincia fuera de rango.")
+        
+        d3 = int(cedula[2])
+        if d3 > 6:
+            raise forms.ValidationError("Identificación inválida.")
+        
+        # Algoritmo de validación de checksum
+        coeficientes = [2, 1, 2, 1, 2, 1, 2, 1, 2]
+        suma = 0
+        for i in range(9):
+            valor = int(cedula[i]) * coeficientes[i]
+            if valor >= 10:
+                valor -= 9
+            suma += valor
+        
+        verificador = int(cedula[9])
+        digito_v = (10 - (suma % 10)) if (suma % 10) != 0 else 0
+        
+        if digito_v != verificador:
+            raise forms.ValidationError("El número de cédula es incorrecto.")
+            
+        return cedula
 
     def clean_titulo_profesional(self):
         titulo = self.cleaned_data.get('titulo_profesional')
@@ -76,7 +112,13 @@ class ExperienciaForm(forms.ModelForm):
             'descripcion_empresa': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Breve descripción del sector y tamaño'}),
             
             'motivo_salida': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-            'tipo_contrato': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Indefinido, Freelance'}),
+            'tipo_contrato': forms.Select(attrs={'class': 'form-control'}, choices=[
+                ('indefinido', 'Indefinido'),
+                ('temporal', 'Temporal'),
+                ('freelance', 'Freelance'),
+                ('pasantia', 'Pasantía'),
+                ('proyecto', 'Por Proyecto'),
+            ]),
             'proyectos_destacados': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
         }
 
