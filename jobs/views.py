@@ -222,10 +222,29 @@ def cambiar_estado_postulacion(request, postulacion_id):
         messages.error(request, 'No tienes permiso para gestionar esta postulación.')
         return redirect('jobs:dashboard_empresa')
         
+    estado_anterior = postulacion.estado
     nuevo_estado = request.POST.get('estado')
+    
     if nuevo_estado in dict(EstadoPostulacion.choices):
         postulacion.estado = nuevo_estado
         postulacion.save()
-        messages.success(request, 'Estado actualizado correctamente.')
+        
+        # Crear mensaje de notificación según el nuevo estado
+        mensaje_notificacion = ""
+        if nuevo_estado == 'contratado':
+            mensaje_notificacion = f"¡Felicidades! Has sido seleccionado para la posición de {postulacion.oferta.titulo} en {postulacion.oferta.empresa.nombre_empresa}."
+        elif nuevo_estado == 'entrevista':
+            mensaje_notificacion = f"Tu postulación para {postulacion.oferta.titulo} ha avanzado a la etapa de entrevista. La empresa se pondrá en contacto contigo pronto."
+        elif nuevo_estado == 'rechazado':
+            mensaje_notificacion = f"Lamentablemente, tu postulación para {postulacion.oferta.titulo} no ha sido seleccionada en esta ocasión. Te animamos a seguir buscando oportunidades."
+        elif nuevo_estado == 'oferta':
+            mensaje_notificacion = f"¡Excelente noticia! {postulacion.oferta.empresa.nombre_empresa} te ha hecho una oferta para la posición de {postulacion.oferta.titulo}."
+        
+        # Guardar la notificación en el feedback (por ahora usamos este campo)
+        if mensaje_notificacion and estado_anterior != nuevo_estado:
+            postulacion.feedback_empresa = mensaje_notificacion
+            postulacion.save()
+        
+        messages.success(request, f'Estado actualizado correctamente. El candidato será notificado.')
     
     return redirect('jobs:ver_postulantes', oferta_id=postulacion.oferta.id)

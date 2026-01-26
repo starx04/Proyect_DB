@@ -33,6 +33,13 @@
                             {% else %}badge-secondary{% endif %}">
                             {{ postulacion.get_estado_display }}
                         </span>
+                        {% if postulacion.feedback_empresa %}
+                        <div class="mt-2 p-2 bg-light rounded small">
+                            <i class="fas fa-envelope-open-text text-primary"></i>
+                            <strong>Mensaje de la empresa:</strong><br>
+                            {{ postulacion.feedback_empresa }}
+                        </div>
+                        {% endif %}
                     </td>
                     <td class="text-center">
                         <a href="{% url 'jobs:detallar_oferta' postulacion.oferta.id %}"

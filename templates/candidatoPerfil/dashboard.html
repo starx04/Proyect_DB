@@ -282,6 +282,13 @@
                             <h3>{{ postulacion.oferta.titulo }}</h3>
                             <div class="company"><i class="far fa-building me-1"></i> {{
                                 postulacion.oferta.empresa.nombre_empresa }}</div>
+                            {% if postulacion.feedback_empresa %}
+                            <div class="mt-2 p-2 rounded" style="background: #e3f2fd; border-left: 3px solid #2196f3;">
+                                <small class="text-primary">
+                                    <i class="fas fa-bell"></i> <strong>Nueva notificación</strong>
+                                </small>
+                            </div>
+                            {% endif %}
                         </div>
                         <div class="d-flex flex-column align-items-end">
                             <span class="status-badge status-{{ postulacion.estado }}">{{ postulacion.get_estado_display
