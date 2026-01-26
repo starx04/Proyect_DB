@@ -79,19 +79,20 @@ class OfertaEmpleo(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.empresa.nombre_empresa}"
-
+    
 class OfertaHabilidad(models.Model):
     oferta = models.ForeignKey(OfertaEmpleo, on_delete=models.CASCADE, related_name='habilidades_requeridas')
-    habilidad = models.ForeignKey(Habilidad, on_delete=models.CASCADE)
-    nivel_requerido = models.CharField(
-        max_length=20, 
-        choices=NivelHabilidad.choices,
-        default=NivelHabilidad.BASICO
-    )
+
+    nombre = models.CharField(max_length=100, verbose_name="Requisito / Habilidad")
+    nivel = models.CharField(max_length=50, choices=[
+        ('basico', 'Básico'),
+        ('intermedio', 'Intermedio'),
+        ('avanzado', 'Avanzado')
+    ], default='intermedio')
     es_obligatorio = models.BooleanField(default=True)
 
-    class Meta:
-        unique_together = ('oferta', 'habilidad')
+    def __str__(self):
+        return f"{self.nombre} ({self.nivel})"
 
 class Postulacion(models.Model):
     oferta = models.ForeignKey(OfertaEmpleo, on_delete=models.CASCADE, related_name='postulaciones')

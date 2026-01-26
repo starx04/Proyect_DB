@@ -9,14 +9,14 @@ class EmpresaForm(forms.ModelForm):
             'direccion_detalle', 'sitio_web', 'telefono', 'logo_url'
         ]
         widgets = {
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe brevemente a tu empresa...'}),
             'nombre_empresa': forms.TextInput(attrs={'class': 'form-control'}),
-            'sector': forms.TextInput(attrs={'class': 'form-control'}),
-            'ciudad': forms.Select(attrs={'class': 'form-control'}),
+            'sector': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Tecnología, Finanzas...'}),
+            'ciudad': forms.Select(attrs={'class': 'form-select'}),
             'direccion_detalle': forms.TextInput(attrs={'class': 'form-control'}),
-            'sitio_web': forms.URLInput(attrs={'class': 'form-control'}),
+            'sitio_web': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
-            'logo_url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'URL de tu logo'}),
+            'logo_url': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'URL de la imagen de tu logo'}),
         }
 
 class OfertaEmpleoForm(forms.ModelForm):
@@ -28,24 +28,29 @@ class OfertaEmpleoForm(forms.ModelForm):
             'fecha_expiracion', 'estado'
         ]
         widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'categoria': forms.Select(attrs={'class': 'form-control'}),
-            'ciudad': forms.Select(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 5}),
-            'tipo_contrato': forms.Select(attrs={'class': 'form-control'}),
-            'modalidad': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Híbrido 2 días'}),
-            'salario_min': forms.NumberInput(attrs={'class': 'form-control'}),
-            'salario_max': forms.NumberInput(attrs={'class': 'form-control'}),
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Desarrollador Python Senior'}),
+            'categoria': forms.Select(attrs={'class': 'form-select'}),
+            'ciudad': forms.Select(attrs={'class': 'form-select'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Detalla las funciones y requisitos...'}),
+            'tipo_contrato': forms.Select(attrs={'class': 'form-select'}),
+            'modalidad': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Híbrido, Remoto, Presencial'}),
+            'salario_min': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00'}),
+            'salario_max': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00'}),
+            # Clave: type='date' activa el calendario
             'fecha_expiracion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'estado': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-select'}),
         }
 
 class OfertaHabilidadForm(forms.ModelForm):
     class Meta:
         model = OfertaHabilidad
-        fields = ['habilidad', 'nivel_requerido', 'es_obligatorio']
+        # CORREGIDO: Usamos 'nombre' y 'nivel' (texto libre) en lugar de 'habilidad' y 'nivel_requerido'
+        fields = ['nombre', 'nivel', 'es_obligatorio']
         widgets = {
-            'habilidad': forms.Select(attrs={'class': 'form-control'}),
-            'nivel_requerido': forms.Select(attrs={'class': 'form-control'}),
-            'es_obligatorio': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Ej: Dominio de Inglés, Python, Trabajo en equipo...'
+            }),
+            'nivel': forms.Select(attrs={'class': 'form-select'}),
+            'es_obligatorio': forms.CheckboxInput(attrs={'class': 'form-check-input', 'style': 'margin-left: 0;'}),
         }

@@ -1,24 +1,147 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">{{ titulo }}</div>
-                <div class="card-body">
+        <div class="col-lg-10">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="fw-bold mb-0 text-dark">
+                        {% if 'editar' in request.path %}Editar Vacante{% else %}Publicar Vacante{% endif %}
+                    </h2>
+                    <p class="text-muted mb-0">Completa los detalles para atraer al mejor talento.</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge rounded-pill bg-primary px-3 py-2 fs-6 shadow-sm">Paso 1 de 2</span>
+                </div>
+            </div>
+
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white p-4">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Información General del Puesto</h5>
+                </div>
+
+                <div class="card-body p-5 bg-light bg-opacity-10">
+                    
                     <form method="POST">
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success">Guardar Oferta</button>
-                            <a href="{% url 'jobs:dashboard_empresa' %}" class="btn btn-secondary">Cancelar</a>
+
+                        <div class="bg-white p-4 rounded-3 shadow-sm mb-4 border">
+                            <h6 class="text-primary fw-bold mb-3 text-uppercase border-bottom pb-2">
+                                <i class="fas fa-briefcase me-1"></i> Datos Básicos
+                            </h6>
+
+                            <div class="form-floating mb-3">
+                                {{ form.titulo }}
+                                <label for="{{ form.titulo.id_for_label }}">Título de la Oferta *</label>
+                                <div class="form-text ps-2">Ej: Desarrollador Full Stack Python/React</div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.categoria }}
+                                        <label for="{{ form.categoria.id_for_label }}">Categoría</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        {{ form.ciudad }}
+                                        <label for="{{ form.ciudad.id_for_label }}">Ciudad / Ubicación</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
+                        <div class="bg-white p-4 rounded-3 shadow-sm mb-4 border">
+                            <h6 class="text-primary fw-bold mb-3 text-uppercase border-bottom pb-2">
+                                <i class="fas fa-align-left me-1"></i> Detalles del Puesto
+                            </h6>
+                            
+                            <div class="form-floating">
+                                {{ form.descripcion }}
+                                <label for="{{ form.descripcion.id_for_label }}">Descripción detallada (Responsabilidades, requisitos, etc.)</label>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-3 shadow-sm mb-4 border">
+                            <h6 class="text-primary fw-bold mb-3 text-uppercase border-bottom pb-2">
+                                <i class="far fa-clock me-1"></i> Condiciones
+                            </h6>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        {{ form.tipo_contrato }}
+                                        <label for="{{ form.tipo_contrato.id_for_label }}">Tipo de Contrato</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        {{ form.modalidad }}
+                                        <label for="{{ form.modalidad.id_for_label }}">Modalidad</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-floating">
+                                        {{ form.fecha_expiracion }}
+                                        <label for="{{ form.fecha_expiracion.id_for_label }}">Cierre de convocatoria</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <label class="form-label text-muted small fw-bold ms-1">Rango Salarial (Opcional)</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text bg-white text-success fw-bold">$</span>
+                                <div class="form-floating">
+                                    {{ form.salario_min }}
+                                    <label for="{{ form.salario_min.id_for_label }}">Mínimo</label>
+                                </div>
+                                <span class="input-group-text bg-light border-start-0 border-end-0">a</span>
+                                <div class="form-floating">
+                                    {{ form.salario_max }}
+                                    <label for="{{ form.salario_max.id_for_label }}">Máximo</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mb-4">
+                            <div class="form-floating w-auto" style="min-width: 200px;">
+                                {{ form.estado }}
+                                <label for="{{ form.estado.id_for_label }}">Estado de publicación</label>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{% url 'jobs:dashboard_empresa' %}" class="btn btn-outline-secondary px-4 rounded-pill fw-bold">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 py-2 rounded-pill fw-bold shadow">
+                                Siguiente Paso <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .form-floating > .form-control, 
+    .form-floating > .form-select {
+        height: 3.5rem;
+        border-radius: 0.5rem;
+    }
+    .form-floating > textarea.form-control {
+        height: 150px;
+    }
+    .card {
+        border-radius: 1rem;
+    }
+</style>
 {% endblock %}

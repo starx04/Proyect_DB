@@ -1,45 +1,118 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h3>Requisitos para: <span class="text-primary">{{ oferta.titulo }}</span></h3>
-    <a href="{% url 'jobs:dashboard_empresa' %}" class="btn btn-outline-secondary mb-3">&larr; Volver al Panel</a>
+<div class="container mt-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge bg-secondary mb-2">Paso 2 de 2</span>
+            <h2 class="fw-bold">Requisitos para: <span class="text-primary">{{ oferta.titulo }}</span></h2>
+            <p class="text-muted">Define qué conocimientos o habilidades necesita el candidato.</p>
+        </div>
+        <a href="{% url 'jobs:dashboard_empresa' %}" class="btn btn-outline-success btn-lg">
+            <i class="fas fa-check-circle me-2"></i> Finalizar y Publicar
+        </a>
+    </div>
 
     <div class="row">
         <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">Agregar Habilidad</div>
-                <div class="card-body">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="fas fa-plus-circle me-2"></i> Agregar Nuevo Requisito
+                </div>
+                <div class="card-body bg-light">
                     <form method="POST">
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary w-100">Agregar</button>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Requisito / Habilidad</label>
+                            {{ form.nombre }} </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nivel Experiencia</label>
+                            {{ form.nivel }}
+                        </div>
+
+                        <div class="mb-3 form-check bg-white p-3 rounded border">
+                            {{ form.es_obligatorio }}
+                            <label class="form-check-label ms-2" for="{{ form.es_obligatorio.id_for_label }}">
+                                ¿Es obligatorio? <span class="text-muted small">(Marcar si es indispensable)</span>
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary fw-bold">
+                                <i class="fas fa-save me-1"></i> Agregar a la Lista
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
 
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Habilidades Requeridas</div>
-                <ul class="list-group list-group-flush">
-                    {% for item in habilidades %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>{{ item.habilidad.nombre }}</strong>
-                            <span class="badge bg-info text-dark">{{ item.get_nivel_requerido_display }}</span>
-                            {% if item.es_obligatorio %}
-                                <span class="badge bg-danger">Obligatorio</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Opcional</span>
-                            {% endif %}
-                        </div>
-                        <a href="{% url 'jobs:eliminar_habilidad' item.id %}" class="btn btn-sm btn-danger">Eliminar</a>
-                    </li>
-                    {% empty %}
-                    <li class="list-group-item text-muted">Esta oferta aún no pide habilidades específicas.</li>
-                    {% endfor %}
-                </ul>
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-list-ul me-2"></i> Lista de Requisitos Actuales</span>
+                    <span class="badge bg-light text-dark border">{{ habilidades|length }} requisitos</span>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col" style="width: 40%;">Requisito</th>
+                                <th scope="col">Nivel</th>
+                                <th scope="col">Prioridad</th>
+                                <th scope="col" class="text-end">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in habilidades %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.nombre }}</strong>
+                                </td>
+                                <td>
+                                    {% if item.nivel == 'basico' %}
+                                        <span class="badge bg-info text-dark">Básico</span>
+                                    {% elif item.nivel == 'intermedio' %}
+                                        <span class="badge bg-primary">Intermedio</span>
+                                    {% else %}
+                                        <span class="badge bg-dark">Avanzado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.es_obligatorio %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Obligatorio</span>
+                                    {% else %}
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Opcional</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'jobs:eliminar_habilidad' item.id %}" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="fas fa-clipboard-list fa-3x mb-3 text-secondary opacity-50"></i>
+                                        <p>Aún no has agregado requisitos a esta oferta.</p>
+                                        <p class="small">Usa el formulario de la izquierda para comenzar.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-3 text-end">
+                <small class="text-muted">Agrega todos los requisitos necesarios antes de finalizar.</small>
             </div>
         </div>
     </div>
