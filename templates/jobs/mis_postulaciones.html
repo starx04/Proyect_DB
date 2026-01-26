@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    body {
+        background-color: #f8fafc;
+        font-family: 'Inter', sans-serif;
+        color: #1e293b;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+    }
+
+    .page-header h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+    }
+
+    .filter-group select {
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        font-size: 0.9rem;
+    }
+
+    .post-item {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .post-item:last-child {
+        border-bottom: none;
+    }
+
+    .job-info h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .job-info .company {
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .meta {
+        text-align: right;
+    }
+
+    .status {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+
+    .status-pendiente { background: #fff7ed; color: #c2410c; }
+    .status-visto { background: #eff6ff; color: #2563eb; }
+    .status-entrevista { background: #f0fdf4; color: #16a34a; }
+    .status-prueba_tecnica { background: #f5f3ff; color: #7c3aed; }
+    .status-oferta { background: #ecfeff; color: #0e7490; }
+    .status-rechazado { background: #fef2f2; color: #dc2626; }
+
+    .actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+
+    .btn-sm {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 1px solid #cbd5f5;
+        color: #2563eb;
+    }
+
+    .btn-danger {
+        background: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+    }
+
+    .empty {
+        padding: 48px;
+        text-align: center;
+        color: #64748b;
+    }
+</style>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1><i class="fas fa-paper-plane"></i> Mis Postulaciones</h1>
+        <a href="{% url 'dashboard_candidato' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span><i class="fas fa-clipboard-list"></i> Historial</span>
+
+            <!-- Filtro visual (solo UI, backend opcional) -->
+            <div class="filter-group">
+                <select>
+                    <option>Todos los estados</option>
+                    <option>Pendiente</option>
+                    <option>Entrevista</option>
+                    <option>Oferta</option>
+                    <option>Rechazado</option>
+                </select>
+            </div>
+        </div>
+
+        {% for postulacion in postulaciones %}
+        <div class="post-item">
+
+            <div class="job-info">
+                <h3>{{ postulacion.oferta.titulo }}</h3>
+                <div class="company">
+                    <i class="far fa-building"></i>
+                    {{ postulacion.oferta.empresa.nombre_empresa }}
+                </div>
+                <small class="text-muted">
+                    Postulado el {{ postulacion.fecha_postulacion|date:"d M Y" }}
+                </small>
+
+                {% if postulacion.feedback_empresa %}
+                <div style="margin-top:6px; font-size:0.8rem; color:#475569;">
+                    <i class="fas fa-comment-dots"></i>
+                    {{ postulacion.feedback_empresa }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="meta">
+                <span class="status status-{{ postulacion.estado }}">
+                    {{ postulacion.get_estado_display }}
+                </span>
+
+                <div class="actions">
+                    <a href="{% url 'jobs:perfil_publico_empresa' postulacion.oferta.empresa.id %}"
+                       class="btn-sm btn-outline">
+                        Ver Empresa
+                    </a>
+
+                    {% if postulacion.estado not in 'rechazado contratado' %}
+                    <button class="btn-sm btn-danger" disabled>
+                        Retirar
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+        {% empty %}
+        <div class="empty">
+            <i class="fas fa-inbox fa-2x"></i><br><br>
+            Aún no has postulado a ninguna oferta.<br>
+            ¡Explora vacantes y comienza!
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Vista Home con Redirección por Rol
 def home_view(request):
