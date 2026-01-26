@@ -23,7 +23,6 @@ Modelos:
 class TipoUsuario(models.TextChoices):
     CANDIDATO = 'candidato', _('Candidato')
     EMPRESA = 'empresa', _('Empresa')
-    ADMIN = 'admin', _('Administrador')
 
 class Genero(models.TextChoices):
     MASCULINO = 'masculino', _('Masculino')

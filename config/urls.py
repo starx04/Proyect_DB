@@ -17,7 +17,6 @@ Including another URLconf
 """
 URL configuration for config project.
 """
-from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
@@ -33,9 +32,6 @@ def home_view(request):
     return render(request, 'home.html')
 
 urlpatterns = [
-    # Panel de administración de Django
-    path('admin/', admin.site.urls),
-
     # Apps de otros integrantes
     path('accounts/', include('accounts.urls')),
     path('locations/', include('locations.urls')),
