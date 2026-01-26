@@ -3,6 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Empresa, OfertaEmpleo, OfertaHabilidad
 from .forms import EmpresaForm, OfertaEmpleoForm, OfertaHabilidadForm
+from .models import Postulacion, OfertasGuardadas, EstadoPostulacion
+from accounts.models import Candidato
+
 
 # --- GESTIÓN DE EMPRESA ---
 
@@ -140,3 +143,91 @@ def eliminar_habilidad(request, habilidad_id):
     habilidad_rel.delete()
     messages.success(request, 'Habilidad eliminada de la oferta.')
     return redirect('gestionar_habilidades', oferta_id=oferta_id)
+
+# Vistas postulaciones
+@login_required
+def postular_oferta(request, oferta_id):
+    # Verificar que el usuario sea candidato
+    if request.user.tipo_usuario != 'candidato':
+        messages.error(request, 'Solo los candidatos pueden postular.')
+        return redirect('home')
+
+    candidato = get_object_or_404(Candidato, usuario=request.user)
+    oferta = get_object_or_404(OfertaEmpleo, id=oferta_id, estado='publicada')
+
+    postulacion, created = Postulacion.objects.get_or_create(
+        candidato=candidato,
+        oferta=oferta
+    )
+
+    if created:
+        messages.success(request, 'Postulación realizada correctamente.')
+    else:
+        messages.info(request, 'Ya te has postulado a esta oferta.')
+
+    return redirect('mis_postulaciones')
+
+@login_required
+def guardar_oferta(request, oferta_id):
+    if request.user.tipo_usuario != 'candidato':
+        messages.error(request, 'Acción no permitida.')
+        return redirect('home')
+
+    candidato = get_object_or_404(Candidato, usuario=request.user)
+    oferta = get_object_or_404(OfertaEmpleo, id=oferta_id)
+
+    OfertasGuardadas.objects.get_or_create(
+        candidato=candidato,
+        oferta=oferta
+    )
+
+    messages.success(request, 'Oferta guardada.')
+    return redirect('ofertas_guardadas')
+
+@login_required
+def mis_postulaciones(request):
+    if request.user.tipo_usuario != 'candidato':
+        messages.error(request, 'Acceso no autorizado.')
+        return redirect('home')
+
+    candidato = get_object_or_404(Candidato, usuario=request.user)
+    postulaciones = Postulacion.objects.filter(
+        candidato=candidato
+    ).select_related('oferta', 'oferta__empresa')
+
+    return render(request, 'jobs/mis_postulaciones.html', {
+        'postulaciones': postulaciones
+    })
+
+@login_required
+def gestion_aplicantes(request, oferta_id):
+    empresa = get_object_or_404(Empresa, usuario=request.user)
+    oferta = get_object_or_404(OfertaEmpleo, id=oferta_id, empresa=empresa)
+
+    # cambiar estado
+    if request.method == 'POST':
+        postulacion_id = request.POST.get('postulacion_id')
+        nuevo_estado = request.POST.get('estado')
+
+        postulacion = get_object_or_404(
+            Postulacion,
+            id=postulacion_id,
+            oferta=oferta  # seguridad: solo postulaciones de ESTA oferta
+        )
+
+        postulacion.estado = nuevo_estado
+        postulacion.save()
+
+        messages.success(request, 'Estado de la postulación actualizado correctamente.')
+        return redirect('jobs:gestion_aplicantes', oferta_id=oferta.id)
+
+    # mostrar postulaciones
+    postulaciones = Postulacion.objects.filter(
+        oferta=oferta
+    ).select_related('candidato', 'candidato__usuario')
+
+    return render(request, 'jobs/gestion_aplicantes.html', {
+        'oferta': oferta,
+        'postulaciones': postulaciones,
+        'estados': EstadoPostulacion.choices
+    })

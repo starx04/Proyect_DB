@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Aplicantes</title>
+</head>
+<body>
+
+    <div class="container fade-in">
+
+        <h1 class="mb-1">Aplicantes a la oferta</h1>
+
+        <div class="card">
+            <h3>{{ oferta.titulo }}</h3>
+            <p class="mt-1">
+                <strong>Empresa:</strong> {{ oferta.empresa.nombre_empresa }}
+            </p>
+        </div>
+
+        {% if postulaciones %}
+
+            {% for p in postulaciones %}
+                <div class="card">
+
+                    <h4>{{ p.candidato.nombre_completo }}</h4>
+
+                    <p class="mt-1">
+                        <strong>Email:</strong> {{ p.candidato.usuario.email }}
+                    </p>
+
+                    <p>
+                        <strong>Estado actual:</strong>
+                        {{ p.estado|capfirst }}
+                    </p>
+
+                    <!-- Cambiar estado -->
+                    <form method="post" class="mt-1">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="estado_{{ p.id }}">Cambiar estado</label>
+                            <select name="estado" id="estado_{{ p.id }}">
+                                {% for value, label in estados %}
+                                    <option value="{{ value }}"
+                                        {% if value == p.estado %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <input type="hidden" name="postulacion_id" value="{{ p.id }}">
+
+                        <button type="submit" class="btn btn-primary">
+                            Actualizar estado
+                        </button>
+                    </form>
+
+                </div>
+            {% endfor %}
+
+        {% else %}
+
+            <div class="card text-center">
+                <p>No hay candidatos postulados a esta oferta todavía.</p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

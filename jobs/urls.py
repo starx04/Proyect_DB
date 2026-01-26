@@ -17,4 +17,12 @@ urlpatterns = [
     # --- GESTIÓN DE HABILIDADES ---
     path('ofertas/<int:oferta_id>/habilidades/', views.gestionar_habilidades, name='gestionar_habilidades'),
     path('habilidades/eliminar/<int:habilidad_id>/', views.eliminar_habilidad, name='eliminar_habilidad'),
+
+    # --- POSTULACIONES ---
+    path('ofertas/<int:oferta_id>/postular/', views.postular_oferta, name='postular_oferta'),
+    path('ofertas/<int:oferta_id>/guardar/', views.guardar_oferta, name='guardar_oferta'),
+    path('candidato/mis-postulaciones/', views.mis_postulaciones, name='mis_postulaciones'),
+
+    # --- APLICANTES ---
+    path('empresa/oferta/<int:oferta_id>/aplicantes/', views.gestion_aplicantes, name='gestion_aplicantes'),
 ]

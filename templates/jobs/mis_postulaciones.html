@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Postulaciones</title>
+</head>
+<body>
+
+    <!-- Contenedor principal -->
+    <div class="container fade-in">
+
+        <h1 class="mb-1">Mis Postulaciones</h1>
+
+        {% if postulaciones %}
+
+            {% for p in postulaciones %}
+                <div class="card">
+                    <h3>{{ p.oferta.titulo }}</h3>
+
+                    <p class="mt-1">
+                        <strong>Empresa:</strong>
+                        {{ p.oferta.empresa.nombre_empresa }}
+                    </p>
+
+                    <p>
+                        <strong>Estado:</strong>
+                        {{ p.estado|capfirst }}
+                    </p>
+
+                    <p>
+                        <strong>Fecha de postulación:</strong>
+                        {{ p.fecha_postulacion|date:"d/m/Y" }}
+                    </p>
+                </div>
+            {% endfor %}
+
+        {% else %}
+
+            <div class="card text-center">
+                <p>Aún no te has postulado a ninguna oferta.</p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
