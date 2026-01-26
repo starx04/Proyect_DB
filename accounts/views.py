@@ -18,7 +18,11 @@ def registro_view(request):
             
             login(request, user)
             messages.success(request, f'Bienvenido, {user.username}!')
-            return redirect('home')
+            
+            # Redirección según tipo
+            if user.tipo_usuario == 'empresa':
+                return redirect('jobs:dashboard_empresa')
+            return redirect('wizard_perfil', paso=1)
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -30,7 +34,11 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, f'Hola de nuevo, {user.username}')
-            return redirect('home')
+            
+            # Redirección inteligente
+            if user.tipo_usuario == 'empresa':
+                return redirect('jobs:dashboard_empresa')
+            return redirect('dashboard_candidato')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})

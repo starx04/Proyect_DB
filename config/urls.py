@@ -23,8 +23,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.shortcuts import render
 
-# Vista Home Temporal (Simple)
+# Vista Home con Redirección por Rol
 def home_view(request):
+    if request.user.is_authenticated:
+        if request.user.tipo_usuario == 'empresa':
+            return redirect('jobs:dashboard_empresa')
+        elif request.user.tipo_usuario == 'candidato':
+            return redirect('dashboard_candidato')
     return render(request, 'home.html')
 
 urlpatterns = [

@@ -83,8 +83,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'db_bolsa_empleo',
-        'USER': 'TU_USUARIO',
-        'PASSWORD': 'TU_PASSWORD',
+        'USER': 'openpg',
+        'PASSWORD': 'openpgpwd',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -136,3 +136,5 @@ MEDIA_URL = '/media/'
 
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

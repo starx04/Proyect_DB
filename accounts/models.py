@@ -53,7 +53,7 @@ class Empresa(models.Model):
     nombre_empresa = models.CharField(max_length=200)
     descripcion = models.TextField(blank=True, null=True)
     sector = models.CharField(max_length=100, blank=True, null=True)
-    ciudad = models.ForeignKey('locations.Ciudad', on_delete=models.SET_NULL, null=True, blank=True)
+    ciudad = models.ForeignKey('locations.Ciudad', on_delete=models.SET_NULL, null=True, blank=True, related_name='empresas_accounts')
     direccion_detalle = models.CharField(max_length=255, blank=True, null=True)
     sitio_web = models.URLField(blank=True, null=True)
     logo_url = models.CharField(max_length=500, blank=True, null=True, help_text="URL al bucket S3 o carpeta media")
@@ -87,16 +87,6 @@ class Candidato(models.Model):
 
     def __str__(self):
         return self.nombre_completo
-
-class Documento(models.Model):
-    candidato = models.ForeignKey(Candidato, on_delete=models.CASCADE, related_name='documentos')
-    nombre_archivo = models.CharField(max_length=255)
-    url_archivo = models.CharField(max_length=500)
-    tipo_documento = models.CharField(max_length=50, help_text="CV, Carta, Certificado")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.nombre_archivo} ({self.candidato.nombre_completo})"
 
 class Habilidad(models.Model):
     nombre = models.CharField(max_length=100, unique=True, help_text="Ej: Java, SQL, Excel")
@@ -183,14 +173,3 @@ class Documento(models.Model):
 
     def __str__(self):
         return f"CV de {self.candidato.nombre_completo}"
-    
-class DocumentoForm(forms.ModelForm):
-    class Meta:
-        model = Documento
-        fields = ['nombre_archivo', 'url_archivo']
-    
-    # Hacemos que los campos no sean obligatorios
-    def __init__(self, *args, **kwargs):
-        super(DocumentoForm, self).__init__(*args, **kwargs)
-        self.fields['nombre_archivo'].required = False
-        self.fields['url_archivo'].required = False
