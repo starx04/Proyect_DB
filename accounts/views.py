@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate
 from django.contrib import messages
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, CandidatoPerfilForm, ExperienciaForm, DocumentoForm
@@ -73,7 +73,7 @@ def dashboard_candidato(request):
         'oferta', 'oferta__empresa'
     ).order_by('-fecha_postulacion')[:5]
 
-    ofertas_guardadas = candidato.ofertas_guardadas_jobs.select_related(
+    ofertas_guardadas = candidato.ofertas_guardadas.select_related(
         'oferta', 'oferta__empresa'
     ).order_by('-created_at')[:5]
 
@@ -83,7 +83,7 @@ def dashboard_candidato(request):
     stats = {
         'postulaciones_activas': candidato.postulaciones.exclude(estado='rechazado').count(),
         'entrevistas': candidato.postulaciones.filter(estado='entrevista').count(),
-        'guardadas': candidato.ofertas_guardadas_jobs.count()
+        'guardadas': candidato.ofertas_guardadas.count()
     }
     
     return render(request, 'candidatoPerfil/dashboard.html', {
@@ -243,3 +243,24 @@ def subir_cv_view(request):
         form = DocumentoForm()
     
     return render(request, 'accounts/subir_cv.html', {'form': form})
+
+@login_required
+def perfil_publico_candidato(request, candidato_id):
+    """Vista detallada del perfil de un candidato para que las empresas lo evalúen."""
+    candidato = get_object_or_404(Candidato, id=candidato_id)
+    
+    # Obtenemos sus datos relacionados
+    experiencias = candidato.experiencia_laboral.all().order_by('-fecha_inicio')
+    educacion = candidato.educacion.all().order_by('-fecha_inicio')
+    habilidades = candidato.habilidades.select_related('habilidad').all()
+    idiomas = candidato.idiomas.select_related('idioma').all()
+    documentos = candidato.documento.all()
+
+    return render(request, 'accounts/perfil_publico.html', {
+        'candidato': candidato,
+        'experiencias': experiencias,
+        'educacion': educacion,
+        'habilidades': habilidades,
+        'idiomas': idiomas,
+        'documentos': documentos
+    })

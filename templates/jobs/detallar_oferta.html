@@ -64,11 +64,18 @@
                     selección.
                 </div>
                 {% else %}
-                <form action="{% url 'jobs:postularse' oferta.id %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary"
-                        style="padding: 15px 40px; font-size: 1.2rem;">POSTULARSE AHORA</button>
-                </form>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <form action="{% url 'jobs:postularse' oferta.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary"
+                            style="padding: 15px 40px; font-size: 1.2rem;">POSTULARSE AHORA</button>
+                    </form>
+                    <form action="{% url 'jobs:guardar_oferta' oferta.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary"
+                            style="padding: 15px 40px; font-size: 1.2rem;">GUARDAR OFERTA</button>
+                    </form>
+                </div>
                 {% endif %}
                 {% else %}
                 <div class="alert alert-warning">

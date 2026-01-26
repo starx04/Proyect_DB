@@ -13,5 +13,6 @@ urlpatterns = [
     path('perfil/<int:paso>/', views.wizard_perfil, name='wizard_perfil'),
     path('dashboard/', views.dashboard_candidato, name='dashboard_candidato'),
     path('perfil/editar/', views.perfil_candidato_step, name='editar_perfil'),
+    path('candidato/perfil/<int:candidato_id>/', views.perfil_publico_candidato, name='perfil_publico_candidato'),
 ]
 

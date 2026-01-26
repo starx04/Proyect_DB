@@ -23,7 +23,13 @@
             <tbody>
                 {% for postulacion in postulaciones %}
                 <tr>
-                    <td><strong>{{ postulacion.candidato.nombre_completo }}</strong></td>
+                    <td>
+                        <a href="{% url 'perfil_publico_candidato' postulacion.candidato.id %}"
+                            style="text-decoration: none; color: inherit;">
+                            <strong>{{ postulacion.candidato.nombre_completo }} <i class="fas fa-external-link-alt"
+                                    style="font-size: 0.8rem; color: var(--primary-color);"></i></strong>
+                        </a>
+                    </td>
                     <td>{{ postulacion.candidato.numero_identificacion|default:"-" }}</td>
                     <td>{{ postulacion.candidato.titulo_profesional|default:"-" }}</td>
                     <td>{{ postulacion.fecha_postulacion|date:"d/m/Y H:i" }}</td>
