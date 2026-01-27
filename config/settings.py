@@ -81,9 +81,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_a',
-        'USER': 'postgres',
-        'PASSWORD': 'admin',
+        'NAME': 'db_bolsa_empleo_app',
+        'USER': 'openpg',
+        'PASSWORD': 'openpgpwd',
         'HOST': 'localhost',
         'PORT': '5432',
     }
