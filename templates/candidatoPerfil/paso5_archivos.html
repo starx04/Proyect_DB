@@ -113,13 +113,14 @@
         margin-bottom: 40px;
     }
 
-    .question-box h5 {
-        margin-bottom: 20px;
-        font-weight: 700;
-        color: white;
+    /* --- RADIO BUTTON FIX --- */
+    .btn-check {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
     }
 
-    /* Custom Toggle */
     .btn-toggle {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid var(--wz-border);
@@ -135,8 +136,8 @@
     }
 
     .btn-check:checked+.btn-toggle {
-        background: var(--wz-primary);
-        border-color: var(--wz-primary);
+        background: var(--wz-primary) !important;
+        border-color: var(--wz-primary) !important;
         box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
     }
 
@@ -160,6 +161,11 @@
         font-size: 3rem;
         color: var(--wz-muted);
         margin-bottom: 20px;
+    }
+
+    /* Ocultar botón nativo de input file */
+    input[type="file"]::file-selector-button {
+        display: none;
     }
 
     /* Form Design */
@@ -223,7 +229,6 @@
 </style>
 
 <div class="wz-wrapper fade-in-up">
-    <!-- Progress Indicator -->
     <div class="wz-steps">
         <span class="step-pill pill-done"><i class="fas fa-check"></i> 1. Personales</span>
         <span class="step-pill pill-done"><i class="fas fa-check"></i> 2. Experiencia</span>
@@ -232,7 +237,6 @@
         <span class="step-pill pill-active">5. Archivos</span>
     </div>
 
-    <!-- Wizard Card -->
     <div class="wz-card">
         <div class="wz-top-bar"></div>
         <div class="wz-body">
@@ -249,8 +253,7 @@
                     <h5>¿Desea cargar su Curriculum Vitae ahora?</h5>
                     <div style="display: flex; justify-content: center; gap: 15px;">
                         <input type="radio" class="btn-check" name="tiene_cv" id="cv_si" value="si" checked>
-                        <label class="btn-toggle" for="cv_si"><i class="fas fa-check-circle"></i> Sí, tengo mi
-                            CV</label>
+                        <label class="btn-toggle" for="cv_si"><i class="fas fa-check-circle"></i> Sí, tengo mi CV</label>
 
                         <input type="radio" class="btn-check" name="tiene_cv" id="cv_no" value="no">
                         <label class="btn-toggle" for="cv_no"><i class="fas fa-times-circle"></i> No por ahora</label>
@@ -260,27 +263,24 @@
                 <div id="formFieldsContainer">
                     <div class="drop-zone">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        <label
-                            style="display: block; font-weight: 700; font-size: 1.1rem; color: white; margin-bottom: 10px;">Arrastra
-                            o selecciona tu archivo</label>
-                        <div style="margin: 0 auto; max-width: 300px;">{{ form.url_archivo }}</div>
+                        <label style="display: block; font-weight: 700; font-size: 1.1rem; color: white; margin-bottom: 10px;">
+                            Selecciona tu archivo PDF o Word
+                        </label>
+                        <div style="margin: 0 auto; max-width: 320px;">{{ form.url_archivo }}</div>
                         <div style="margin-top: 20px; font-size: 0.8rem; color: var(--wz-muted);">
-                            <span
-                                style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 2px 8px; border-radius: 4px; margin-right: 8px;">MÁX
-                                10MB</span>
-                            Formatos: PDF, .doc, .docx
+                            <span style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 2px 8px; border-radius: 4px; margin-right: 8px;">MÁX 10MB</span>
+                            Formatos aceptados: PDF, .doc, .docx
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label>Etiqueta del archivo (Opcional)</label>
+                        <label>Nombre del archivo (Opcional)</label>
                         {{ form.nombre_archivo }}
                     </div>
                 </div>
 
                 <div class="wz-footer">
-                    <a href="{% url 'wizard_perfil' paso=4 %}" class="btn-back"
-                        style="text-decoration: none; font-weight: 700; color: var(--wz-muted);">
+                    <a href="{% url 'wizard_perfil' paso=4 %}" class="btn-back">
                         <i class="fas fa-arrow-left"></i> Anterior
                     </a>
                     <button type="submit" class="btn-finish" id="submitBtn">
@@ -305,14 +305,17 @@
                 container.style.display = 'none';
                 btn.innerHTML = 'Finalizar Registro <i class="fas fa-check"></i>';
                 btn.style.background = 'var(--wz-primary)';
+                if(fileInput) fileInput.removeAttribute('required');
             } else {
                 container.style.display = 'block';
                 btn.innerHTML = 'Finalizar Registro <i class="fas fa-flag-checkered"></i>';
                 btn.style.background = 'var(--wz-success)';
+                if(fileInput) fileInput.setAttribute('required', 'required');
             }
         }
 
         if (fileInput) {
+            fileInput.className = 'form-control'; // Inyectar clase para estilo
             fileInput.addEventListener('change', function () {
                 const allowed = /(\.doc|\.docx|\.pdf)$/i;
                 if (!allowed.exec(this.value)) {
@@ -321,6 +324,7 @@
                 }
             });
         }
+        
         radioSi.addEventListener('change', toggleForm);
         radioNo.addEventListener('change', toggleForm);
         toggleForm();

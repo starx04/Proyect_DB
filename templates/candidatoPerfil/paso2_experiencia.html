@@ -121,6 +121,19 @@
         color: white;
     }
 
+    /* --- SOLUCIÓN PARA LOS CÍRCULOS GIGANTES --- */
+    .btn-check {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        clip: rect(0 0 0 0) !important;
+        pointer-events: none !important;
+    }
+
     /* Custom Toggle */
     .btn-toggle {
         background: rgba(255, 255, 255, 0.05);
@@ -137,9 +150,10 @@
     }
 
     .btn-check:checked+.btn-toggle {
-        background: var(--wz-primary);
-        border-color: var(--wz-primary);
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        background: var(--wz-primary) !important;
+        border-color: var(--wz-primary) !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+        color: white !important;
     }
 
     /* Form Design */
@@ -182,6 +196,12 @@
         padding: 12px 18px !important;
         color: white !important;
         transition: all 0.3s ease !important;
+    }
+
+    /* --- OPCIONES DEL SELECT --- */
+    select option {
+        background-color: #141620 !important;
+        color: white !important;
     }
 
     .form-control:focus {
@@ -248,7 +268,6 @@
 </style>
 
 <div class="wz-wrapper fade-in-up">
-    <!-- Progress Indicator -->
     <div class="wz-steps">
         <span class="step-pill pill-done"><i class="fas fa-check"></i> 1. Personales</span>
         <span class="step-pill pill-active">2. Experiencia</span>
@@ -257,7 +276,6 @@
         <span class="step-pill">5. Archivos</span>
     </div>
 
-    <!-- Wizard Card -->
     <div class="wz-card">
         <div class="wz-top-bar"></div>
         <div class="wz-body">
@@ -274,12 +292,10 @@
                     <h5>¿Dispone de experiencia laboral?</h5>
                     <div style="display: flex; justify-content: center; gap: 15px;">
                         <input type="radio" class="btn-check" name="tiene_experiencia" id="exp_si" value="si" checked>
-                        <label class="btn-toggle" for="exp_si"><i class="fas fa-check-circle"></i> Sí, tengo
-                            experiencia</label>
+                        <label class="btn-toggle" for="exp_si"><i class="fas fa-check-circle"></i> Sí, tengo experiencia</label>
 
                         <input type="radio" class="btn-check" name="tiene_experiencia" id="exp_no" value="no">
-                        <label class="btn-toggle" for="exp_no"><i class="fas fa-times-circle"></i> No tengo
-                            experiencia</label>
+                        <label class="btn-toggle" for="exp_no"><i class="fas fa-times-circle"></i> No tengo experiencia</label>
                     </div>
                 </div>
 
@@ -314,46 +330,28 @@
                         </div>
                     </div>
 
-                    <div class="section-divider">Diferenciadores</div>
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <div class="form-group"><label>Logros clave</label>{{ form.logros }}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group"><label>Stacks/Herramientas</label>{{ form.tecnologias }}</div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group"><label>Personal a cargo</label>{{ form.personas_cargo }}</div>
-                        </div>
-                    </div>
-
                     <div class="section-divider">Extras</div>
                     <div class="row g-4">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="{{ form.tipo_contrato.id_for_label }}">Tipo de Contrato</label>
                                 {{ form.tipo_contrato }}
-                                {% if form.tipo_contrato.errors %}
-                                <small class="text-danger">{{ form.tipo_contrato.errors }}</small>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
-
                 </div>
-        </div>
 
-        <div class="wz-footer">
-            <a href="{% url 'wizard_perfil' paso=1 %}" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Volver al paso anterior
-            </a>
-            <button type="submit" class="btn-next" id="submitBtn">
-                Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>
-            </button>
+                <div class="wz-footer">
+                    <a href="{% url 'wizard_perfil' paso=1 %}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Volver al paso anterior
+                    </a>
+                    <button type="submit" class="btn-next" id="submitBtn">
+                        Guardar y Continuar <i class="fas fa-chevron-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
         </div>
-        </form>
     </div>
-</div>
 </div>
 
 <script>

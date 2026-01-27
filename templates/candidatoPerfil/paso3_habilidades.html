@@ -119,7 +119,18 @@
         color: white;
     }
 
-    /* Custom Toggle */
+    /* --- SOLUCIÓN PARA OCULTAR LOS CÍRCULOS (RADIO BUTTONS) --- */
+    .btn-check {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        pointer-events: none !important;
+    }
+
+    /* Custom Toggle Button */
     .btn-toggle {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid var(--wz-border);
@@ -135,9 +146,10 @@
     }
 
     .btn-check:checked+.btn-toggle {
-        background: var(--wz-primary);
-        border-color: var(--wz-primary);
-        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        background: var(--wz-primary) !important;
+        border-color: var(--wz-primary) !important;
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.3) !important;
+        color: white !important;
     }
 
     /* Form Design */
@@ -161,6 +173,11 @@
         padding: 12px 18px !important;
         color: white !important;
         transition: all 0.3s ease !important;
+    }
+
+    select option {
+        background-color: #141620 !important;
+        color: white !important;
     }
 
     .form-control:focus {
@@ -219,7 +236,6 @@
 </style>
 
 <div class="wz-wrapper fade-in-up">
-    <!-- Progress Indicator -->
     <div class="wz-steps">
         <span class="step-pill pill-done"><i class="fas fa-check"></i> 1. Personales</span>
         <span class="step-pill pill-done"><i class="fas fa-check"></i> 2. Experiencia</span>
@@ -228,7 +244,6 @@
         <span class="step-pill">5. Archivos</span>
     </div>
 
-    <!-- Wizard Card -->
     <div class="wz-card">
         <div class="wz-top-bar"></div>
         <div class="wz-body">
@@ -245,8 +260,7 @@
                     <h5>¿Desea agregar habilidades técnicas?</h5>
                     <div style="display: flex; justify-content: center; gap: 15px;">
                         <input type="radio" class="btn-check" name="tiene_habilidades" id="hab_si" value="si" checked>
-                        <label class="btn-toggle" for="hab_si"><i class="fas fa-plus-circle"></i> Sí, agregar
-                            ahora</label>
+                        <label class="btn-toggle" for="hab_si"><i class="fas fa-plus-circle"></i> Sí, agregar ahora</label>
 
                         <input type="radio" class="btn-check" name="tiene_habilidades" id="hab_no" value="no">
                         <label class="btn-toggle" for="hab_no"><i class="fas fa-forward"></i> No por ahora</label>
@@ -256,8 +270,7 @@
                 <div id="formFieldsContainer">
                     <div class="alert-premium">
                         <i class="fas fa-info-circle"></i>
-                        <span>Puedes añadir tus habilidades una por una. Tendrás oportunidad de agregar más en tu perfil
-                            después.</span>
+                        <span>Puedes añadir tus habilidades una por una. Tendrás oportunidad de agregar más en tu perfil después.</span>
                     </div>
 
                     <div class="row g-3">
@@ -265,8 +278,7 @@
                             <div class="form-group">
                                 <label>Nombre de la habilidad *</label>
                                 {{ form.nombre_habilidad }}
-                                <small style="color: var(--wz-muted); margin-top: 5px; display: block;">Ej: Python,
-                                    Liderazgo, SQL, Figma...</small>
+                                <small style="color: var(--wz-muted); margin-top: 5px; display: block;">Ej: Python, Liderazgo, SQL, Figma...</small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -285,8 +297,7 @@
                             <div class="form-group">
                                 <label>Contexto de uso</label>
                                 {{ form.contexto_uso }}
-                                <small style="color: var(--wz-muted); margin-top: 5px; display: block;">Menciona
-                                    brevemente dónde aplicaste esta habilidad.</small>
+                                <small style="color: var(--wz-muted); margin-top: 5px; display: block;">Menciona brevemente dónde aplicaste esta habilidad.</small>
                             </div>
                         </div>
                     </div>
