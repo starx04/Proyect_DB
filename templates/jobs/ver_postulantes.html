@@ -3,6 +3,70 @@
 {% block title %}Postulantes - {{ oferta.titulo }}{% endblock %}
 
 {% block content %}
+<style>
+    /* CORRECCIÓN DE COLORES PARA MODO OSCURO */
+    :root {
+        --wz-bg: #0a0b10;
+        --wz-card: rgba(255, 255, 255, 0.05);
+        --wz-border: rgba(255, 255, 255, 0.1);
+        --wz-text: #ffffff;
+    }
+
+    body {
+        background-color: var(--wz-bg) !important;
+        color: var(--wz-text) !important;
+    }
+
+    .card {
+        background: var(--wz-card) !important;
+        border: 1px solid var(--wz-border) !important;
+        color: white !important;
+    }
+
+    /* Estilos para la Tabla */
+    .table {
+        color: white !important;
+        border-color: var(--wz-border) !important;
+    }
+
+    .table thead th {
+        border-bottom: 2px solid var(--wz-border) !important;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+    }
+
+    .table tbody td {
+        border-bottom: 1px solid var(--wz-border) !important;
+        vertical-align: middle;
+    }
+
+    /* CORRECCIÓN DE SELECTORES (DROPDOWNS) */
+    select {
+        background-color: #141620 !important; /* Fondo oscuro */
+        color: white !important;
+        border: 1px solid var(--wz-border) !important;
+        border-radius: 8px !important;
+        appearance: none !important;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.8rem center !important;
+        background-size: 12px !important;
+        padding-right: 2rem !important;
+    }
+
+    select option {
+        background-color: #141620 !important;
+        color: white !important;
+    }
+
+    /* Ajuste de badges para mejor contraste */
+    .badge { font-weight: 600; padding: 0.4em 0.8em; }
+</style>
+
 <div class="fade-in-up">
     <div style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
         <div>
