@@ -2,6 +2,55 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.validators import FileExtensionValidator
 from .models import Usuario, Candidato, ExperienciaLaboral, Documento, CandidatoHabilidad, CandidatoIdioma, Idioma
+from django.utils import timezone
+
+class ExperienciaForm(forms.ModelForm):
+    class Meta:
+        model = ExperienciaLaboral
+        fields = [
+            'empresa', 'cargo', 'fecha_inicio', 'fecha_fin', 'trabajo_actual', 'ubicacion', 'descripcion',
+            'logros', 'tecnologias', 'personas_cargo', 'descripcion_empresa',
+            'motivo_salida', 'tipo_contrato', 'proyectos_destacados'
+        ]
+        widgets = {
+            'empresa': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la empresa'}),
+            'cargo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tu cargo o puesto'}),
+            'fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_fin': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'ubicacion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ciudad, País'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Describe tus funciones principales...'}),
+            'logros': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Ej: Aumento de ventas en un 15%'}),
+            'tecnologias': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Python, SAP, Scrum'}),
+            'personas_cargo': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0'}),
+            'descripcion_empresa': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Breve descripción del sector y tamaño'}),
+            'motivo_salida': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
+            'tipo_contrato': forms.Select(attrs={'class': 'form-control'}),
+            'proyectos_destacados': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://...'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Campos Obligatorios
+        self.fields['empresa'].required = True
+        self.fields['cargo'].required = True
+        self.fields['fecha_inicio'].required = True
+        self.fields['ubicacion'].required = True
+        self.fields['descripcion'].required = True
+
+    def clean(self):
+        cleaned_data = super().clean()
+        inicio = cleaned_data.get('fecha_inicio')
+        fin = cleaned_data.get('fecha_fin')
+        actual = cleaned_data.get('trabajo_actual')
+
+        if inicio and fin and fin < inicio:
+            # Esto envía el error específicamente al campo fecha_fin
+            self.add_error('fecha_fin', "La fecha de fin no puede ser anterior al inicio.")
+        
+        if not actual and not fin:
+            self.add_error('fecha_fin', "Si no es tu trabajo actual, debes poner una fecha de fin.")
+            
+        return cleaned_data
 
 class CustomUserCreationForm(UserCreationForm):
     class Meta:
@@ -199,4 +248,16 @@ class IdiomaForm(forms.ModelForm):
                 ('C2', 'C2 - Competencia técnica'),
                 ('nativo', 'Lengua Materna / Nativo'),
             ]),
+        }
+
+
+class RegistroForm(forms.ModelForm):
+    class Meta:
+        model = Usuario  # <--- Cambia 'User' por 'Usuario'
+        fields = ['username', 'email', 'tipo_usuario'] # o los campos que tengas
+        widgets = {
+            'user_type': forms.Select(attrs={
+                'class': 'form-control', # O la clase que estés usando
+                'style': 'background-color: #1a1a2e; color: white;' # Esto arregla el color
+            }),
         }

@@ -3,17 +3,62 @@
 {% block title %}Crear Cuenta | JobBoard{% endblock %}
 
 {% block content %}
+<style>
+    /* SOLUCIÓN AL PROBLEMA VISUAL DEL SELECT */
+    select {
+        width: 100%;
+        background-color: #1a1a2e !important; /* Fondo oscuro */
+        color: white !important;               /* Texto blanco */
+        border: 1px solid rgba(139, 92, 246, 0.3) !important;
+        border-radius: 12px !important;
+        padding: 0.8rem 1rem !important;
+        outline: none;
+        appearance: none; /* Elimina el estilo nativo de Windows/Chrome */
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    /* Estilo para las opciones dentro del menú */
+    select option {
+        background-color: #1a1a2e; /* Fondo oscuro para las opciones */
+        color: white;
+        padding: 10px;
+    }
+
+    select:focus {
+        border-color: var(--secondary-glow) !important;
+        box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Estilo base para los otros inputs del form para que se vean iguales */
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"],
+    textarea {
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 12px !important;
+        padding: 0.8rem 1rem !important;
+        margin-top: 0.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+</style>
+
 <div class="fade-in-up"
     style="display:flex; justify-content:center; align-items:center; min-height:75vh; padding: 2rem 0;">
-    <div class="card" style="width: 100%; max-width: 500px; padding: 3rem;">
+    <div class="card" style="width: 100%; max-width: 500px; padding: 3rem; background: #161625; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05);">
+        
         <div style="text-align: center; margin-bottom: 2.5rem;">
-            <div
-                style="display: inline-flex; width: 64px; height: 64px; background: rgba(139, 92, 246, 0.1); border-radius: 16px; align-items: center; justify-content: center; margin-bottom: 1.5rem; border: 1px solid rgba(139, 92, 246, 0.2);">
-                <i class="fas fa-user-plus" style="color: var(--secondary-glow); font-size: 1.8rem;"></i>
+            <div style="display: inline-flex; width: 64px; height: 64px; background: rgba(139, 92, 246, 0.1); border-radius: 16px; align-items: center; justify-content: center; margin-bottom: 1.5rem; border: 1px solid rgba(139, 92, 246, 0.2);">
+                <i class="fas fa-user-plus" style="color: #8b5cf6; font-size: 1.8rem;"></i>
             </div>
-            <h2 style="font-family: 'Outfit'; font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem;">Crear Cuenta
-            </h2>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">Únete a la red de talento más innovadora.</p>
+            <h2 style="font-family: 'Outfit'; font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem; color: white;">Crear Cuenta</h2>
+            <p style="color: #94a3b8; font-size: 0.95rem;">Únete a la red de talento más innovadora.</p>
         </div>
 
         <form method="post">
@@ -21,8 +66,13 @@
 
             {% for field in form %}
             <div class="form-group">
-                <label for="{{ field.id_for_label }}" style="font-weight: 600; color: var(--text-secondary);">{{ field.label }}</label>
+                <label for="{{ field.id_for_label }}" style="font-weight: 600; color: #94a3b8; display: block; margin-bottom: 0.5rem;">
+                    {{ field.label }}
+                </label>
+                
+                {# Renderizado del campo (Django insertará el <select> o <input> aquí) #}
                 {{ field }}
+                
                 {% if field.errors %}
                 <div style="color: #ef4444; font-size: 0.85rem; margin-top: 0.4rem;">
                     {% for error in field.errors %} {{ error }} {% endfor %}
@@ -30,17 +80,17 @@
                 {% endif %}
             </div>
             {% endfor %}
-
-            <button type="submit" class="btn btn-primary w-100" style="padding: 1rem; margin-top: 1rem;">
-                Registrarme Ahora <i class="fas fa-rocket ms-2"></i>
-            </button>
+            <div style="display: flex; justify-content: center; width: 100%; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="padding: 1rem 2.5rem; background: #8b5cf6; border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer;">
+                    Registrarme Ahora <i class="fas fa-rocket ms-2"></i>
+                </button>
+            </div>
         </form>
 
-        <div
-            style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color);">
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="color: #94a3b8; font-size: 0.95rem;">
                 ¿Ya tienes una cuenta? <a href="{% url 'login' %}"
-                    style="font-weight: 700; color: var(--primary-glow);">Ingresa aquí</a>
+                    style="font-weight: 700; color: #8b5cf6; text-decoration: none;">Ingresa aquí</a>
             </p>
         </div>
     </div>
