@@ -32,14 +32,14 @@
                         <li><a href="{% url 'admin_locations' %}">Admin Ubicaciones</a></li>
                     {% endif %}
                     <li>
-                        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                        <form action="{% url 'bolsa_empleo:logout' %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" style="background:none; border:none; cursor:pointer; color:inherit; font:inherit;">Salir</button>
                         </form>
                     </li>
                 {% else %}
-                    <li><a href="{% url 'login' %}">Ingresar</a></li>
-                    <li><a href="{% url 'registro' %}" class="btn btn-primary">Registrarse</a></li>
+                    <li><a href="{% url 'bolsa_empleo:login' %}">Ingresar</a></li>
+                    <li><a href="{% url 'bolsa_empleo:registro' %}" class="btn btn-primary">Registrarse</a></li>
                 {% endif %}
             </ul>
         </div>

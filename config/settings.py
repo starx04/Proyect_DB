@@ -37,13 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Apps del Proyecto
-    'locations',
-    'accounts',
-    'jobs',
+    # Apps del Proyecto (CONSOLIDADA)
+    'bolsa_empleo',
 ]
 
-AUTH_USER_MODEL = 'accounts.Usuario'
+AUTH_USER_MODEL = 'bolsa_empleo.Usuario'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,7 +79,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_bolsa_empleo',
+        'NAME': 'db_proyect_ax',
         'USER': 'openpg',
         'PASSWORD': 'openpgpwd',
         'HOST': 'localhost',

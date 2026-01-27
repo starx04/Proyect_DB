@@ -15,9 +15,9 @@
             Ir a mi Dashboard <i class="fas fa-arrow-right"></i>
         </a>
         {% else %}
-        <a href="{% url 'registro' %}" class="btn btn-primary pulse-hover" style="margin-right: 1rem;">Comenzar
+        <a href="{% url 'bolsa_empleo:registro' %}" class="btn btn-primary pulse-hover" style="margin-right: 1rem;">Comenzar
             Ahora</a>
-        <a href="{% url 'login' %}" class="btn btn-secondary">Ya tengo cuenta</a>
+        <a href="{% url 'bolsa_empleo:login' %}" class="btn btn-secondary">Ya tengo cuenta</a>
         {% endif %}
     </div>
 </div>

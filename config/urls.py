@@ -20,28 +20,10 @@ URL configuration for config project.
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from django.shortcuts import render, redirect
-
-# Vista Home con Redirección por Rol
-def home_view(request):
-    if request.user.is_authenticated:
-        if request.user.tipo_usuario == 'empresa':
-            return redirect('jobs:dashboard_empresa')
-        elif request.user.tipo_usuario == 'candidato':
-            return redirect('dashboard_candidato')
-    return render(request, 'home.html')
 
 urlpatterns = [
-    # Apps de otros integrantes
-    path('accounts/', include('accounts.urls')),
-    path('locations/', include('locations.urls')),
-
-    # --- MÓDULO (Integrante 3) ---
-    
-    path('jobs/', include('jobs.urls')),
-
-    # Página de inicio
-    path('', home_view, name='home'),
+    # Bolsa de Empleo (Sistema Unificado)
+    path('', include('bolsa_empleo.urls')),
 ]
 
 # Configuración para servir archivos multimedia (imágenes, PDFs) en modo DEBUG
